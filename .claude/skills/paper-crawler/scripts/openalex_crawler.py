@@ -1,6 +1,7 @@
 import argparse
 import json
 import os
+import re
 import time
 from datetime import datetime, timedelta
 from typing import Dict, Iterable, List, Optional
@@ -73,9 +74,15 @@ class OpenAlexCrawler:
 
     @staticmethod
     def _match_any_alias(text: str, aliases: Iterable[str]) -> bool:
-        lowered = (text or "").lower()
+        normalized_text = re.sub(r"[^a-z0-9]+", " ", (text or "").lower()).strip()
         for alias in aliases:
-            if alias.lower() in lowered:
+            normalized_alias = re.sub(r"[^a-z0-9]+", " ", alias.lower()).strip()
+            if not normalized_alias:
+                continue
+            if len(normalized_alias) <= 4:
+                if re.search(rf"(^| ){re.escape(normalized_alias)}($| )", normalized_text):
+                    return True
+            elif normalized_alias in normalized_text:
                 return True
         return False
 
@@ -114,6 +121,8 @@ class OpenAlexCrawler:
             "publication_date": result.get("publication_date"),
             "year": result.get("publication_year"),
             "venue": venue_name,
+            "provider": "openalex",
+            "provider_id": result.get("id"),
             "source": "openalex",
             "source_url": result.get("id"),
             "pdf_url": self._extract_pdf_url(result),
@@ -125,8 +134,8 @@ class OpenAlexCrawler:
     def search(
         self,
         query: str,
-        venue_name: str,
-        venue_aliases: List[str],
+        venue_name: str = "OpenAlex",
+        venue_aliases: Optional[List[str]] = None,
         max_results: int = 200,
         years: int = 3,
     ) -> List[Dict]:
@@ -158,7 +167,7 @@ class OpenAlexCrawler:
                     "source") or {}).get("display_name") or "")
                 host_venue = (
                     ((result.get("host_venue") or {}).get("display_name") or ""))
-                if not (
+                if venue_aliases and not (
                     self._match_any_alias(source_display, venue_aliases)
                     or self._match_any_alias(host_venue, venue_aliases)
                 ):
@@ -181,7 +190,9 @@ class OpenAlexCrawler:
 
 
 def save_json(path: str, data: List[Dict]) -> None:
-    os.makedirs(os.path.dirname(path), exist_ok=True)
+    output_dir = os.path.dirname(path)
+    if output_dir:
+        os.makedirs(output_dir, exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 

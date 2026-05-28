@@ -177,11 +177,7 @@ class PaperCrawler(ArxivCrawler):
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Search and download papers from arXiv.")
-    parser.add_argument(
-        "--query",
-        default="distribute OR scheduler OR gang scheduling OR cluster management OR resource allocation",
-        help="arXiv query string",
-    )
+    parser.add_argument("--query", required=True, help="arXiv query string")
     parser.add_argument("--max-results", type=int,
                         default=200, help="Maximum number of papers")
     parser.add_argument("--years", type=int, default=3,

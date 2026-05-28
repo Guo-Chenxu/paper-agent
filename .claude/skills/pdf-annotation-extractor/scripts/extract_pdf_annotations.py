@@ -211,15 +211,15 @@ def markdown_escape(text: str) -> str:
 
 def write_markdown(data: dict[str, Any], output_path: Path) -> None:
     lines: list[str] = []
-    lines.append(f"# PDF 批注提取\n")
+    lines.append("# PDF Annotation Extraction\n")
     lines.append(f"- Source PDF: `{data['source_pdf']}`")
     lines.append(f"- Pages: {data['page_count']}")
     lines.append(f"- Annotations: {data['annotation_count']}\n")
 
-    lines.append("## 批注汇总\n")
+    lines.append("## Annotation Summary\n")
     if data["annotations"]:
         for index, item in enumerate(data["annotations"], start=1):
-            lines.append(f"### 批注 {index} — Page {item['page']} ({item['type']})")
+            lines.append(f"### Annotation {index} — Page {item['page']} ({item['type']})")
             if item.get("author"):
                 lines.append(f"- Author: {item['author']}")
             if item.get("created"):
@@ -227,17 +227,17 @@ def write_markdown(data: dict[str, Any], output_path: Path) -> None:
             if item.get("modified"):
                 lines.append(f"- Modified: {item['modified']}")
             if item.get("selected_text"):
-                lines.append("\n**原文片段：**\n")
+                lines.append("\n**Selected Text:**\n")
                 lines.append(f"> {markdown_escape(item['selected_text']).replace(chr(10), chr(10) + '> ')}")
-            lines.append("\n**上下文：**\n")
-            context = item.get("context") or "未找到可提取的上下文。"
+            lines.append("\n**Context:**\n")
+            context = item.get("context") or "No extractable context found."
             lines.append(f"> {markdown_escape(context).replace(chr(10), chr(10) + '> ')}")
             if item.get("comment"):
-                lines.append("\n**批注内容：**\n")
+                lines.append("\n**Comment:**\n")
                 lines.append(markdown_escape(item["comment"]))
             lines.append("")
     else:
-        lines.append("未发现 PDF 批注。\n")
+        lines.append("No PDF annotations found.\n")
 
     output_path.write_text("\n".join(lines), encoding="utf-8")
 

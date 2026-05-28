@@ -6,15 +6,18 @@ from openalex_crawler import OpenAlexCrawler, save_json
 
 ACM_ALIASES: List[str] = [
     "acm",
-    "sig",
-    "international conference on",
-    "symposium on",
+    "sigcomm",
+    "sigmetrics",
+    "sosp",
+    "asplos",
+    "eurosys",
+    "socc",
 ]
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Crawl ACM-related papers via OpenAlex")
+        description="Find ACM-related papers via the OpenAlex compatibility wrapper")
     parser.add_argument("--query", required=True, help="Search query")
     parser.add_argument("--max-results", type=int,
                         default=200, help="Maximum number of results")

@@ -1,6 +1,6 @@
 ---
 name: reviewer-attack
-description: "Runs adversarial academic paper reviews with configured LLM reviewers. Use when SPEC.md phase 9 calls .claude/skills/reviewer-attack for simulated peer review, rebuttal preparation, or when the user asks to attack a paper with strict, constructive, and newcomer reviewer perspectives. Reads REVIEWER_ATTACK_* settings from .env and supports GPT/OpenAI-compatible and Gemini APIs."
+description: "Use when simulating adversarial academic peer review, preparing rebuttals, stress-testing a paper draft, or attacking a research idea with strict, constructive, and newcomer reviewer perspectives. Reads REVIEWER_ATTACK_* settings from .env and supports GPT/OpenAI-compatible and Gemini APIs."
 argument-hint: "Enter the paper path, target conference/journal, supplemental context, and output simulated review report"
 user-invocable: true
 ---
@@ -9,9 +9,9 @@ user-invocable: true
 
 ## When To Use
 
-Use this skill when `SPEC.md` requires `.claude/skills/reviewer-attack`:
+Use this skill when a paper draft or research idea needs adversarial review:
 
-1. Phase 9: simulate reviewers with different styles and perform adversarial review of `paper/paper.tex`.
+1. Simulate reviewers with different styles and perform adversarial review of a LaTeX paper draft.
 2. Generate a simulated review report that provides an issue list for subsequent paper revisions and rebuttal writing.
 3. During idea refinement, first-draft writing, or revision, identify weaknesses that could lead to rejection before submission.
 
@@ -40,7 +40,7 @@ If reviewer-specific variables are absent, the script also accepts `REVIEW_*` fa
    - newcomer reviewer: readability, clarity, missing definitions.
 3. Save each review under `reviews/`.
 4. Save the aggregate report to `reports/simulated_review_report.md`.
-5. Use the generated issues to revise `paper/paper.tex`, then write `paper/rebuttal.tex`.
+5. Use the generated issues to revise `paper/paper.tex`, then write `paper/rebuttal.tex` when a rebuttal is needed.
 
 Example:
 

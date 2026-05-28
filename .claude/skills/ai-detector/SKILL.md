@@ -13,9 +13,10 @@ The goal isn't just to flag problems — it's to help the writer understand *why
 ## Reference Material
 
 Primary reference: `references/ai_writing_patterns.md`
+Project writing-pattern reference: `.claude/rules/writing-patterns.md`
 Source: https://www.aicheckr.io/blog/spotting-ai-writing-patterns
 
-When analyzing text, first try fetching the live URL above for the latest content. If unreachable, use the patterns documented below.
+When analyzing academic text, read `.claude/rules/writing-patterns.md` before every analysis so reusable project-specific writing issues are included. For general AI-pattern checks, first try fetching the live URL above for the latest content. If unreachable, use the patterns documented below.
 
 No single pattern definitively proves AI authorship. A **cluster** of these signals together is what matters.
 

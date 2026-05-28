@@ -1,4 +1,4 @@
-# Annotation-Derived Writing Patterns
+# Writing Patterns
 
 This reference stores reusable writing issues discovered from annotated academic-paper PDFs. Use it together with `ai_writing_patterns.md` when checking papers, essays, or long-form technical writing.
 
@@ -69,42 +69,40 @@ Name the exact component, metric, dataset, assumption, section, or figure/table 
 
 ---
 
-### 5. Overuse of Em-Dashes as Sentence Connectors
+### 5. Avoid Em-Dashes
 
 **Signals**
 
-- `---` (or `—`) used to insert parenthetical clauses, append explanations, or introduce lists mid-sentence.
-- Multiple em-dashes in a single paragraph.
-- Em-dashes used where a period, comma, or subordinate clause would be clearer.
+- `---` (or `—`) used anywhere in the document.
 
 **Check**
-Search for `---` or `—` in the document. For each occurrence, determine whether the em-dash is performing the role of a period (new sentence), a comma (appositive), or a colon (introducing a list/explanation).
+Search for `---` or `—` in the document.
 
 **Fix**
 
 - Parenthetical aside → use commas or parentheses, or restructure as a separate sentence.
 - Explanation/elaboration → split into a new sentence with a period.
 - List introduction → use "including", "such as", or restructure.
-- Keep em-dashes only for genuine dramatic interruption or when no alternative reads naturally.
+- Do not use em-dashes. Always rewrite using the alternatives above.
 
 ---
 
-### 6. Overuse of Colons in Prose
+### 6. Minimize Colons in Prose
 
 **Signals**
 
 - Colons used to introduce explanations, elaborations, or short clauses that could be expressed as a new sentence or subordinate clause.
-- Multiple colons in a single paragraph or section.
 - Colons used where "because", "where", "including", or a period would be more natural.
 
 **Check**
-Search for `:` in prose text (excluding math environments, `\label{}`, `\ref{}`, algorithm pseudocode, and formal definition introductions). Count occurrences per section.
+Search for `:` in prose text (excluding math environments, `\label{}`, `\ref{}`, algorithm pseudocode, and formal definition introductions).
 
 **Fix**
 
 - Explanation after colon → split into a new sentence, or use ", because" / ", as" / ", where".
 - List after colon → use "including" or "such as" and restructure.
-- Keep colons only for: introducing equations, formal definitions, numbered contribution lists, and labeled list items (e.g., `\textbf{vs.\ X}:`).
+- Keep colons only for introducing equations, formal definitions, and labeled list items.
+- Default to avoiding colons. Use alternative constructions whenever possible.
 
 ---
 
@@ -147,3 +145,21 @@ Search for `;` in prose (excluding math, algorithm pseudocode). For each, check 
 - If the clauses contrast: use ", while" or ", whereas".
 - If the second clause elaborates: use a period and start a new sentence.
 - Keep semicolons only for tight parallel constructions or when separating items in a list that already contains commas.
+
+---
+
+### 9. Use `\sim` for Numeric Ranges Instead of Hyphens
+
+**Signals**
+
+- A hyphen `-` or en-dash `--` is used between two numbers to express a range or approximate multiplier (e.g., `5-10$\times$`, `10-20\%`).
+
+**Check**
+Search for patterns like `\d+-\d+` or `\d+--\d+` in text and math environments.
+
+**Fix**
+Replace the hyphen/en-dash with `\sim` inside math mode. Examples:
+
+- `5-10$\times$` → `$5\sim10\times$`
+- `10-20\%` → `$10\sim20\%$`
+- `$2-3$ hours` → `$2\sim3$ hours`

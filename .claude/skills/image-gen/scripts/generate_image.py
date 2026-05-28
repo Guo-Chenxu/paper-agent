@@ -399,8 +399,7 @@ def convert_image_to_pdf(image_path: Path, pdf_path: Path) -> None:
     try:
         import img2pdf
     except ImportError as exc:
-        raise RuntimeError(
-            "Missing dependency: install img2pdf in the paper conda environment") from exc
+        raise RuntimeError("Missing dependency: install img2pdf") from exc
 
     with open(pdf_path, "wb") as handle:
         handle.write(img2pdf.convert(image_path))

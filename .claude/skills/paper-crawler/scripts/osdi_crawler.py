@@ -7,13 +7,12 @@ from openalex_crawler import OpenAlexCrawler, save_json
 OSDI_ALIASES: List[str] = [
     "osdi",
     "operating systems design and implementation",
-    "usenix",
 ]
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Crawl OSDI papers via OpenAlex")
+        description="Find OSDI papers via the OpenAlex compatibility wrapper")
     parser.add_argument("--query", required=True, help="Search query")
     parser.add_argument("--max-results", type=int,
                         default=200, help="Maximum number of results")

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
-CCF A/B venue paper crawler using arXiv.
-Targets distributed systems & resource scheduling papers from 2023-2026.
+CCF A/B venue helper using arXiv metadata and externally supplied queries.
 """
 
 import argparse
@@ -41,26 +40,6 @@ CCF_VENUES = {
 
 # arXiv categories for systems/distributed computing
 ARXIV_CATEGORIES = ["cs.DC", "cs.OS", "cs.NI", "cs.AR", "cs.PF"]
-
-# Search queries targeting TRADITIONAL distributed scheduling (general, not LLM-specific)
-SEARCH_QUERIES = [
-    "gang scheduling parallel job scheduling cluster",
-    "job scheduling fairness makespan cluster workload",
-    "task scheduling heterogeneous computing resource allocation",
-    "preemptive scheduling priority queue cluster management",
-    "work stealing load balancing distributed runtime",
-    "coflow scheduling network-aware datacenter jobs",
-    "bin packing resource fragmentation cluster scheduling",
-    "deadline-aware scheduling real-time distributed systems",
-    "multi-resource fair scheduling dominant resource fairness",
-    "backfill scheduling EASY backfilling HPC supercomputer",
-    "topology-aware scheduling communication-aware placement",
-    "spot instance preemption checkpointing cloud scheduling",
-    "workflow scheduling DAG task dependency distributed",
-    "queue scheduling FIFO priority aging starvation",
-    "resource contention interference-aware co-location scheduling",
-]
-
 
 def is_recent(date_obj: datetime, years: int = 3) -> bool:
     cutoff = datetime.utcnow() - timedelta(days=365 * years)
@@ -121,8 +100,12 @@ def crawl_arxiv(
                     "year": result.published.year,
                     "venue": detect_venue(result.title + " " + result.summary + " " + " ".join(result.categories)),
                     "categories": result.categories,
+                    "provider": "arxiv",
+                    "provider_id": arxiv_id,
                     "source": "arxiv",
                     "source_url": result.entry_id,
+                    "openalex_id": "",
+                    "semantic_scholar_id": "",
                     "cited_by_count": 0,
                     "doi": None,
                 }
@@ -169,14 +152,15 @@ def save_abstract(paper: Dict, abstracts_dir: str) -> None:
         f.write(f"Authors: {', '.join(paper['authors'][:5])}\n\n")
         f.write(f"Venue: {paper['venue']}\n\n")
         f.write(f"Date: {paper['publication_date']}\n\n")
-        f.write(f"ArXiv: {paper['source_url']}\n\n")
+        f.write(f"Source URL: {paper['source_url']}\n\n")
         f.write(f"Categories: {', '.join(paper.get('categories', []))}\n\n")
         f.write("Abstract:\n")
         f.write(paper.get("abstract", "") + "\n")
 
 
 def main():
-    parser = argparse.ArgumentParser(description="CCF A/B arXiv crawler for distributed systems")
+    parser = argparse.ArgumentParser(description="CCF A/B arXiv helper for externally supplied queries")
+    parser.add_argument("--query", required=True, help="Search query")
     parser.add_argument("--years", type=int, default=3)
     parser.add_argument("--max-per-query", type=int, default=80)
     parser.add_argument("--output-dir", default="./papers")
@@ -191,9 +175,9 @@ def main():
     for d in [pdfs_dir, abstracts_dir, metadata_dir]:
         d.mkdir(parents=True, exist_ok=True)
 
-    print(f"[Phase 1] Crawling arXiv for distributed systems papers (last {args.years} years)...")
+    print(f"[Phase 1] Crawling arXiv for query '{args.query}' (last {args.years} years)...")
     papers = crawl_arxiv(
-        queries=SEARCH_QUERIES,
+        queries=[args.query],
         categories=ARXIV_CATEGORIES,
         years=args.years,
         max_per_query=args.max_per_query,
@@ -250,7 +234,8 @@ def main():
         venue_counts[v] = venue_counts.get(v, 0) + 1
 
     summary = {
-        "query_count": len(SEARCH_QUERIES),
+        "query": args.query,
+        "query_count": 1,
         "raw_count": len(papers),
         "deduped_count": len(deduped),
         "final_count": len(deduped),

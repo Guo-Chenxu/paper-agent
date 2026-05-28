@@ -51,7 +51,7 @@ PERSONAS = {
             "hard, but include actionable fixes."
         ),
     },
-    "newbie": {
+    "newcomer": {
         "label": "Newcomer Reviewer",
         "focus": (
             "Prioritize readability, motivation, definitions, figure/table clarity, "
@@ -166,8 +166,37 @@ def curl_post_json(url: str, payload: dict[str, Any], headers: dict[str, str], t
         raise RuntimeError(f"Reviewer API request failed with HTTP {status_code}: {redact_secrets(body[:1200])}")
     try:
         return json.loads(body)
-    except json.JSONDecodeError as exc:
-        raise RuntimeError(f"Reviewer API returned non-JSON response: {body[:500]}") from exc
+    except json.JSONDecodeError:
+        return _parse_sse_response(body)
+
+
+def _parse_sse_response(raw: str) -> dict[str, Any]:
+    """Parse Server-Sent Events streaming response into a single OpenAI-style dict."""
+    chunks = []
+    model = ""
+    for line in raw.splitlines():
+        if not line.startswith("data:"):
+            continue
+        data = line[len("data:"):].strip()
+        if data == "[DONE]":
+            break
+        try:
+            chunk = json.loads(data)
+        except json.JSONDecodeError:
+            continue
+        if not model and chunk.get("model"):
+            model = chunk["model"]
+        for choice in chunk.get("choices", []):
+            delta = choice.get("delta", {})
+            content = delta.get("content", "")
+            if content:
+                chunks.append(content)
+    if not chunks:
+        raise RuntimeError(f"Reviewer API returned non-JSON response: {raw[:500]}")
+    return {
+        "choices": [{"message": {"content": "".join(chunks)}}],
+        "model": model,
+    }
 
 
 def post_json(url: str, payload: dict[str, Any], headers: dict[str, str], timeout: int) -> dict[str, Any]:
@@ -191,8 +220,8 @@ def post_json(url: str, payload: dict[str, Any], headers: dict[str, str], timeou
                 )
             try:
                 return response.json()
-            except ValueError as exc:
-                raise RuntimeError(f"Reviewer API returned non-JSON response: {response.text[:500]}") from exc
+            except ValueError:
+                return _parse_sse_response(response.text)
 
     request = urllib.request.Request(
         url,
@@ -213,8 +242,8 @@ def post_json(url: str, payload: dict[str, Any], headers: dict[str, str], timeou
     else:
         try:
             return json.loads(body)
-        except json.JSONDecodeError as exc:
-            raise RuntimeError(f"Reviewer API returned non-JSON response: {body[:500]}") from exc
+        except json.JSONDecodeError:
+            return _parse_sse_response(body)
 
     try:
         return curl_post_json(url, payload, merged_headers, timeout)

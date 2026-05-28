@@ -75,7 +75,7 @@ For each issue category, record the scan method, matched locations, revised loca
 
 After each revision, summarize the writing-style, AI-trace, expression-clarity, or paper-prose issues addressed:
 
-1. Update `.claude/rules/annotation-derived-writing-patterns.md`.
+1. Update `.claude/rules/writing-patterns.md`.
 2. Add only reusable patterns: problem, signals, checking method, and revision suggestion.
 3. Do not add private project facts, unpublished reviewer identities, one-off task state, or purely technical TODOs.
 4. Confirm that `ai-detector`'s `SKILL.md` requires reading this rules file before every analysis.

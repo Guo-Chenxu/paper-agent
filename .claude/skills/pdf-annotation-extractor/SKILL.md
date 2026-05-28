@@ -39,7 +39,7 @@ python -m pip install pymupdf
 | Human review | Markdown output |
 | Programmatic processing | JSON output |
 | Per-annotation sentence context | `context` field / `**Context:**` section, located by annotation coordinates |
-| Highlighted or underlined text | `selected_text` field / source text snippet |
+| Highlighted or underlined text | `selected_text` field / `**Selected Text:**` section |
 
 ## Basic Workflow
 
@@ -87,7 +87,7 @@ Markdown output structure:
 
 ### Annotation 1 — Page N (Highlight)
 
-**Source text snippet:**
+**Selected Text:**
 
 > selected annotated text
 
@@ -95,7 +95,7 @@ Markdown output structure:
 
 > sentence before the annotation. selected annotated text. sentence after the annotation.
 
-**Annotation comment:**
+**Comment:**
 ...
 ```
 
@@ -118,7 +118,7 @@ Before finishing the task, check:
 2. The page count matches the actual PDF page count.
 3. If the PDF visibly contains annotations, `annotation_count` is greater than 0.
 4. Spot-check 1–2 annotations and confirm that `selected_text` matches the highlighted/annotated location in the PDF.
-5. Confirm every item in `annotations[]` has a `context` field and every Markdown annotation has a Context section; if context is empty, the page likely has no extractable surrounding text.
+5. Confirm every item in `annotations[]` has a `context` field and every Markdown annotation has a `**Context:**` section; if context is empty, the page likely has no extractable surrounding text.
 6. If the annotation count is 0, tell the user that annotations may not be embedded in the PDF, rather than treating it as a script failure.
 
 ## Common Mistakes
