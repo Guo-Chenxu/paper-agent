@@ -36,7 +36,7 @@ pip install -r requirements.txt
 
 安装 [latex](https://www.latex-project.org/get/) 保证后期可以编译 latex 文件
 
-1. 配置环境变量
+3. 配置环境变量
 
 ```bash
 cp .env.template .env
@@ -67,7 +67,7 @@ cp .env.template .env
 
 ## 一些经验
 
-1. 截止至2026年4月12日，实测推荐使用 claude code + claude opus 4.6效果最佳，可以使用国内中转站 [bytecatcode](https://www.bytecatcode.org/register?aff=cXYn)。尝试过 codex + gpt5.5，基本不可用（太绕了，折腾一天不停地fallback，一篇论文都没下下来）。
+1. 截止至2026年4月12日，实测推荐使用 claude code + claude opus 4.6效果最佳，可以使用国内中转站 [bytecatcode](https://www.bytecatcode.org/register?aff=cXYn)。
 
 ## 开发与贡献
 

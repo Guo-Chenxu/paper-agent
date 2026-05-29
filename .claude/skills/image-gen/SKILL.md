@@ -61,7 +61,7 @@ Expected outputs:
 ## Script
 
 - `scripts/generate_image.py`: loads `.env`, calls the configured image model, saves the generated image under `figures/`, then converts it to PDF.
-- `scripts/img2pdf`: converts an existing generated image into a same-name PDF vector wrapper.
+- `scripts/image2pdf.py`: converts an existing generated image into a same-name PDF vector wrapper.
 
 Required PDF conversion dependency:
 
