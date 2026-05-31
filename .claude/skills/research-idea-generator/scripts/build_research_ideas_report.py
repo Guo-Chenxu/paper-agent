@@ -83,7 +83,7 @@ def build_report(
     if screening_stats:
         total = screening_stats.get("total_papers", "N/A")
         passed = screening_stats.get("passed_papers", "N/A")
-        screening_summary = f"Stage 1 collected {total} papers and screened {passed} high-quality papers (score >= 7.0)."
+        screening_summary = f"Collected {total} papers and screened {passed} high-quality papers (score >= 7.0)."
 
     report_sections = [
         "# Research Directions and Ideas Report",
