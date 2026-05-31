@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
 CCF A/B venue helper using arXiv metadata and externally supplied queries.
+Loads venue data from ccf_venues_systems.json.
 """
 
 import argparse
@@ -14,29 +15,39 @@ from typing import Dict, List, Optional
 import arxiv
 import requests
 
-# CCF A/B venues for distributed systems & systems area
-CCF_VENUES = {
-    # CCF-A Systems
-    "OSDI": ["OSDI", "Operating Systems Design and Implementation"],
-    "SOSP": ["SOSP", "Symposium on Operating Systems Principles"],
-    "NSDI": ["NSDI", "Networked Systems Design and Implementation"],
-    "EuroSys": ["EuroSys", "European Conference on Computer Systems"],
-    "ATC": ["ATC", "USENIX Annual Technical Conference", "USENIX:ATC"],
-    "ASPLOS": ["ASPLOS", "Architectural Support for Programming Languages"],
-    "ISCA": ["ISCA", "International Symposium on Computer Architecture"],
-    "MICRO": ["MICRO", "IEEE/ACM International Symposium on Microarchitecture"],
-    "SC": ["SC", "Supercomputing", "International Conference for High Performance"],
-    # CCF-B Systems
-    "ICDCS": ["ICDCS", "International Conference on Distributed Computing Systems"],
-    "IPDPS": ["IPDPS", "International Parallel and Distributed Processing Symposium"],
-    "ICPP": ["ICPP", "International Conference on Parallel Processing"],
-    "Middleware": ["Middleware", "ACM/IFIP/USENIX Middleware"],
-    "HPDC": ["HPDC", "High Performance Distributed Computing"],
-    "ICS": ["ICS", "International Conference on Supercomputing"],
-    "CLUSTER": ["CLUSTER", "IEEE International Conference on Cluster Computing"],
-    "CLOUD": ["CLOUD", "IEEE International Conference on Cloud Computing"],
-    "SoCC": ["SoCC", "Symposium on Cloud Computing"],
-}
+
+def load_ccf_venues() -> Dict[str, List[str]]:
+    """Load CCF venues from JSON file."""
+    json_path = Path(__file__).parent.parent / "references" / "ccf_venues_all.json"
+
+    with open(json_path, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+
+    venues = {}
+
+    # Extract from all categories
+    for category_name, category_data in data['categories'].items():
+        # Extract conferences
+        for tier in ['A', 'B', 'C']:
+            for conf in category_data.get('conferences', {}).get(tier, []):
+                abbr = conf.get('abbr', '')
+                full_name = conf.get('full_name', '')
+                if abbr:
+                    venues[abbr] = [abbr, full_name]
+
+        # Extract journals
+        for tier in ['A', 'B', 'C']:
+            for journal in category_data.get('journals', {}).get(tier, []):
+                abbr = journal.get('abbr', '')
+                full_name = journal.get('full_name', '')
+                if abbr:
+                    venues[abbr] = [abbr, full_name]
+
+    return venues
+
+
+# Load CCF venues from JSON
+CCF_VENUES = load_ccf_venues()
 
 # arXiv categories for systems/distributed computing
 ARXIV_CATEGORIES = ["cs.DC", "cs.OS", "cs.NI", "cs.AR", "cs.PF"]
@@ -175,7 +186,7 @@ def main():
     for d in [pdfs_dir, abstracts_dir, metadata_dir]:
         d.mkdir(parents=True, exist_ok=True)
 
-    print(f"[Phase 1] Crawling arXiv for query '{args.query}' (last {args.years} years)...")
+    print(f"Crawling arXiv for query '{args.query}' (last {args.years} years)...")
     papers = crawl_arxiv(
         queries=[args.query],
         categories=ARXIV_CATEGORIES,
@@ -191,7 +202,7 @@ def main():
             seen.add(p["arxiv_id"])
             deduped.append(p)
 
-    print(f"[Phase 1] Raw: {len(papers)}, Deduped: {len(deduped)}")
+    print(f"Raw: {len(papers)}, Deduped: {len(deduped)}")
 
     # Save abstracts
     for paper in deduped:
@@ -200,7 +211,7 @@ def main():
     # Download PDFs
     download_stats = {"success": 0, "failed": 0, "skipped": 0}
     if args.download_pdf and not args.no_download:
-        print(f"[Phase 1] Downloading PDFs for {len(deduped)} papers...")
+        print(f"Downloading PDFs for {len(deduped)} papers...")
         for i, paper in enumerate(deduped):
             safe_id = paper["arxiv_id"].replace("/", "_").replace(".", "_")
             out_path = str(pdfs_dir / f"{safe_id}.pdf")
