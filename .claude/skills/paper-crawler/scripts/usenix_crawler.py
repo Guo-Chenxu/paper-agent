@@ -16,15 +16,41 @@ from paper_record import normalize_title, safe_token
 
 BASE_URL = "https://www.usenix.org"
 VENUE_NAMES = {
+    # CCF A类
     "osdi": "OSDI",
     "nsdi": "NSDI",
+    "usenixsec": "USENIX Security",
+    "fast": "FAST",
+
+    # CCF B类
+    "hotos": "HotOS",
+    "lisa": "LISA",
+
+    # CCF C类
+    "hotsec": "HotSec",
+    "soups": "SOUPS",
+    "woot": "WOOT",
+
+    # 新兴/专业会议
+    "vehiclesec": "VehicleSec",
+    "pepr": "PEPR",
+    "srecon": "SREcon",
+
+    # 已停止/转移会议
     "atc": "USENIX ATC",
+    "hotstorage": "HotStorage",
+    "hotcloud": "HotCloud",
+
+    # 合作举办会议
+    "msst": "MSST"
 }
 
 
 def query_matches(paper: Dict, query: str) -> bool:
-    terms = [term for term in re.split(r"\s+", normalize_title(query)) if term not in {"or", "and"}]
-    haystack = normalize_title((paper.get("title") or "") + " " + (paper.get("abstract") or ""))
+    terms = [term for term in re.split(
+        r"\s+", normalize_title(query)) if term not in {"or", "and"}]
+    haystack = normalize_title(
+        (paper.get("title") or "") + " " + (paper.get("abstract") or ""))
     return bool(terms) and any(term in haystack for term in terms)
 
 
@@ -47,7 +73,8 @@ class LinkParser(HTMLParser):
 
     def handle_endtag(self, tag):
         if tag == "a" and self._href:
-            text = " ".join(part.strip() for part in self._text_parts if part.strip())
+            text = " ".join(part.strip()
+                            for part in self._text_parts if part.strip())
             self.links.append({"href": self._href, "text": text})
             self._href = ""
             self._text_parts = []
@@ -69,7 +96,8 @@ class UsenixCrawler:
             normalized = venue.lower()
             for year in range(now - years + 1, now + 1):
                 short_year = str(year)[-2:]
-                paths.append(f"/conference/{normalized}{short_year}/technical-sessions")
+                paths.append(
+                    f"/conference/{normalized}{short_year}/technical-sessions")
         return paths
 
     def _extract_paper_links(self, html: str) -> List[str]:
@@ -83,7 +111,8 @@ class UsenixCrawler:
         return sorted(set(links))
 
     def _extract_title(self, html: str) -> str:
-        match = re.search(r"<h1[^>]*>(.*?)</h1>", html, re.IGNORECASE | re.DOTALL)
+        match = re.search(r"<h1[^>]*>(.*?)</h1>", html,
+                          re.IGNORECASE | re.DOTALL)
         if not match:
             return ""
         return re.sub(r"<[^>]+>", "", match.group(1)).strip()
@@ -99,7 +128,8 @@ class UsenixCrawler:
         return ""
 
     def _extract_abstract(self, html: str) -> str:
-        match = re.search(r"<h2[^>]*>\s*Abstract\s*</h2>(.*?)(<h2|</section|</div>)", html, re.IGNORECASE | re.DOTALL)
+        match = re.search(
+            r"<h2[^>]*>\s*Abstract\s*</h2>(.*?)(<h2|</section|</div>)", html, re.IGNORECASE | re.DOTALL)
         if not match:
             return ""
         text = re.sub(r"<[^>]+>", " ", match.group(1))
@@ -111,7 +141,8 @@ class UsenixCrawler:
             tag = match.group(0)
             if not re.search(r"name=[\"']citation_author[\"']", tag, re.IGNORECASE):
                 continue
-            content = re.search(r"content=[\"']([^\"']+)[\"']", tag, re.IGNORECASE)
+            content = re.search(
+                r"content=[\"']([^\"']+)[\"']", tag, re.IGNORECASE)
             if content:
                 authors.append(unescape(content.group(1)).strip())
         return authors
@@ -160,7 +191,8 @@ class UsenixCrawler:
                 venue_token = path.split("/conference/", 1)[1].split("/", 1)[0]
                 venue_key = re.sub(r"\d+$", "", venue_token)
                 year_match = re.search(r"(\d{2})$", venue_token)
-                year = 2000 + int(year_match.group(1)) if year_match else current_year
+                year = 2000 + int(year_match.group(1)
+                                  ) if year_match else current_year
                 entry = {
                     "title": self._extract_title(paper_html),
                     "authors": self._extract_authors(paper_html),
@@ -181,9 +213,12 @@ class UsenixCrawler:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="USENIX proceedings crawler")
     parser.add_argument("--query", required=True, help="Search query")
-    parser.add_argument("--usenix-venues", nargs="+", default=["osdi"], help="USENIX venues such as osdi nsdi atc")
-    parser.add_argument("--max-results", type=int, default=100, help="Maximum number of results")
-    parser.add_argument("--years", type=int, default=3, help="Recent years window")
+    parser.add_argument("--usenix-venues", nargs="+",
+                        default=["osdi"], help="USENIX venues such as osdi nsdi atc")
+    parser.add_argument("--max-results", type=int,
+                        default=100, help="Maximum number of results")
+    parser.add_argument("--years", type=int, default=3,
+                        help="Recent years window")
     parser.add_argument("--output", required=True, help="Output JSON path")
     return parser.parse_args()
 
@@ -191,7 +226,8 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
     crawler = UsenixCrawler()
-    papers = crawler.search(args.query, venues=args.usenix_venues, max_results=args.max_results, years=args.years)
+    papers = crawler.search(args.query, venues=args.usenix_venues,
+                            max_results=args.max_results, years=args.years)
     output_dir = os.path.dirname(args.output)
     if output_dir:
         os.makedirs(output_dir, exist_ok=True)

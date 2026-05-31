@@ -18,7 +18,8 @@ import requests
 
 def load_ccf_venues() -> Dict[str, List[str]]:
     """Load CCF venues from JSON file."""
-    json_path = Path(__file__).parent.parent / "references" / "ccf_venues_all.json"
+    json_path = Path(__file__).parent.parent / \
+        "references" / "ccf_venues_all.json"
 
     with open(json_path, 'r', encoding='utf-8') as f:
         data = json.load(f)
@@ -49,8 +50,30 @@ def load_ccf_venues() -> Dict[str, List[str]]:
 # Load CCF venues from JSON
 CCF_VENUES = load_ccf_venues()
 
-# arXiv categories for systems/distributed computing
-ARXIV_CATEGORIES = ["cs.DC", "cs.OS", "cs.NI", "cs.AR", "cs.PF"]
+# arXiv categories
+ARXIV_CATEGORIES = [
+    # 人工智能与机器学习
+    "cs.AI", "cs.LG", "cs.CV", "cs.CL", "cs.RO", "cs.MM", "cs.HC",
+    # 系统与架构
+    "cs.AR", "cs.OS", "cs.DC", "cs.PF", "cs.SY",
+    # 网络与安全
+    "cs.NI", "cs.CR", "cs.MA",
+    # 软件工程与编程语言
+    "cs.SE", "cs.PL", "cs.FL", "cs.LO",
+    # 数据库与信息检索
+    "cs.DB", "cs.IR", "cs.DL",
+    # 理论计算机科学
+    "cs.TH", "cs.CC", "cs.DM", "cs.GT",
+    # 图形学与其他计算机科学子领域
+    "cs.GR", "cs.CG", "cs.IT", "cs.CE", "cs.ET",
+    # 统计学
+    "stat.ML", "stat.CO", "stat.TH", "stat.AP",
+    # 电气工程与系统科学
+    "eess.SP", "eess.IV", "eess.SY",
+    # 数学（与计算机科学高度相关）
+    "math.OC", "math.PR", "math.ST"
+]
+
 
 def is_recent(date_obj: datetime, years: int = 3) -> bool:
     cutoff = datetime.utcnow() - timedelta(days=365 * years)
@@ -170,7 +193,8 @@ def save_abstract(paper: Dict, abstracts_dir: str) -> None:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="CCF A/B arXiv helper for externally supplied queries")
+    parser = argparse.ArgumentParser(
+        description="CCF A/B arXiv helper for externally supplied queries")
     parser.add_argument("--query", required=True, help="Search query")
     parser.add_argument("--years", type=int, default=3)
     parser.add_argument("--max-per-query", type=int, default=80)
@@ -186,7 +210,8 @@ def main():
     for d in [pdfs_dir, abstracts_dir, metadata_dir]:
         d.mkdir(parents=True, exist_ok=True)
 
-    print(f"Crawling arXiv for query '{args.query}' (last {args.years} years)...")
+    print(
+        f"Crawling arXiv for query '{args.query}' (last {args.years} years)...")
     papers = crawl_arxiv(
         queries=[args.query],
         categories=ARXIV_CATEGORIES,
