@@ -45,11 +45,24 @@ def main():
     )
     parser.add_argument("--abstracts-dir", default="./papers/abstracts")
     parser.add_argument("--metadata-dir", default="./papers/metadata")
+    parser.add_argument("--pdfs-dir", default="./papers/pdfs")
     parser.add_argument("--output", default="screening_input.json")
     args = parser.parse_args()
 
+    # Validate directories exist
+    abstracts_path = Path(args.abstracts_dir)
+    if not abstracts_path.is_dir():
+        print(f"ERROR: abstracts directory not found: {args.abstracts_dir}")
+        print("Run the crawler first to generate abstract files.")
+        return 1
+
     # Load papers from abstracts
     papers = load_papers_from_abstracts(args.abstracts_dir)
+
+    if not papers:
+        print("WARNING: no papers loaded from abstracts directory.")
+        print("Check that the directory contains .txt files with Title: and Abstract: fields.")
+        return 1
 
     # Try to merge with metadata JSON if available
     metadata_files = sorted(Path(args.metadata_dir).glob("papers_*.json"))
@@ -70,6 +83,27 @@ def main():
                 merged.append(tp)
         papers = merged
 
+    # Validate abstracts: warn about papers with empty or missing abstracts
+    no_abstract = [p.get("arxiv_id", "?") for p in papers if not p.get("abstract", "").strip()]
+    if no_abstract:
+        print(f"WARNING: {len(no_abstract)} paper(s) have empty or missing abstracts: {no_abstract}")
+        print("Papers without abstracts will produce unreliable Round 1 scores.")
+
+    # Add PDF paths for Round 2
+    pdfs_dir = Path(args.pdfs_dir)
+    pdf_available = 0
+    for paper in papers:
+        arxiv_id = paper.get("arxiv_id", "")
+        pdf_path = pdfs_dir / f"{arxiv_id}.pdf"
+        if pdf_path.is_file():
+            paper["pdf_path"] = str(pdf_path)
+            pdf_available += 1
+        else:
+            paper["pdf_path"] = None
+    if pdf_available < len(papers):
+        missing = len(papers) - pdf_available
+        print(f"NOTE: {missing} paper(s) missing PDFs. These will need PDF download before Round 2.")
+
     print(f"Loaded {len(papers)} papers for screening")
 
     # Save to output file
@@ -80,12 +114,18 @@ def main():
 
     print(f"Saved to {output_path}")
     print(f"\nNext steps:")
-    print(f"1. Read the papers from {output_path}")
-    print(f"2. Spawn 3 parallel subagents with different reviewer personas")
-    print(f"3. Each agent scores papers on innovation (1-4), impact (1-3), relevance (1-3)")
-    print(f"4. Aggregate scores and filter papers with avg_total >= 7.0")
-    print(f"5. Generate structured summaries for passed papers")
-    print(f"6. Create screening report")
+    print(f"  Round 1 (Title+Abstract Pre-Screening):")
+    print(f"  1. Read the papers from {output_path}")
+    print(f"  2. Spawn 3 parallel subagents (Senior Researcher, Professor, Industry Researcher)")
+    print(f"  3. Each agent scores on: relevance (5pts) + potential innovation (3pts) + publication quality (2pts) = 10pts")
+    print(f"  4. Papers with avg_total >= 5.0 across 3 agents advance to Round 2")
+    print(f"  Round 2 (Full-Text Deep Screening):")
+    print(f"  5. Download PDFs for Round 2 papers missing from {args.pdfs_dir}")
+    print(f"  6. Spawn 3 parallel subagents reading full PDFs")
+    print(f"  7. Each agent scores on: innovation (4pts) + impact (3pts) + relevance (3pts) = 10pts")
+    print(f"  8. Papers with avg_total >= 7.0 across 3 agents are selected for summarization")
+    print(f"  9. Generate structured summaries for selected papers")
+    print(f"  10. Create screening report")
 
     return 0
 

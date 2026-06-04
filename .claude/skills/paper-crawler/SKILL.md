@@ -79,6 +79,7 @@ python .claude/skills/paper-crawler/scripts/multi_source_crawler.py \
   --max-results-per-provider 120 \
   --usenix-venues osdi \
   --workers 4 \
+  --download-pdf \
   --output-dir ./papers
 ```
 
