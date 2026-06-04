@@ -1,25 +1,23 @@
 ---
 name: paper-crawler
-description: "Use when reproducible paper collection and screening is needed. Supports multi-provider crawling (OpenAlex, arXiv, Semantic Scholar, USENIX), multi-agent scoring, structured paper summaries, and screening reports."
+description: "Use when reproducible paper collection is needed. Supports multi-provider crawling (OpenAlex, arXiv, Semantic Scholar, USENIX), deduplication, normalized metadata, and optional PDF download."
 argument-hint: "Enter research domain, time range, primary providers, and optional USENIX venues"
 user-invocable: true
 ---
 
-# Paper Crawler & Screening
+# Paper Crawler
 
 ## Skill Goal
 
-Automated paper collection and screening workflow:
+Automated paper collection from multiple providers:
 
 1. Multi-provider crawling: OpenAlex, arXiv, Semantic Scholar, USENIX proceedings
-2. Multi-agent parallel scoring based on innovation, impact, and relevance
-3. Structured paper summaries for high-scoring papers
-4. Comprehensive screening report generation
+2. Metadata normalization and cross-provider deduplication
+3. Optional PDF download with arXiv title-based fallback
 
 ## When To Use
 
 - Need candidate papers from multiple public metadata sources
-- Require multi-agent evaluation and structured summaries
 - Want normalized metadata, deduplication, and CCF A/B venue preference
 - Starting a literature review or research survey workflow
 
@@ -48,7 +46,6 @@ export SEMANTIC_SCHOLAR_API_KEY=...
 - Semantic Scholar provider: `./scripts/semantic_scholar_crawler.py`
 - USENIX proceedings provider: `./scripts/usenix_crawler.py`
 - Legacy OpenAlex wrappers: `./scripts/ieee_crawler.py`, `./scripts/acm_crawler.py`
-- Load papers for Claude-based screening: `./scripts/load_papers_for_screening.py`
 
 ## References
 
@@ -68,7 +65,7 @@ Recommended input parameters:
 - Primary providers: default `openalex arxiv semanticscholar usenix`.
 - Maximum papers per provider: default `120`.
 - USENIX venues: default `osdi`; configurable with `--usenix-venues osdi nsdi atc`.
-- CCF A/B preference: prioritize candidates from CCF A/B venues during scoring and reporting when venue metadata is available.
+- CCF A/B preference: prioritize candidates from CCF A/B venues during collection when venue metadata is available.
 
 ### Step 2: Run Multi-Provider Crawl
 
@@ -166,122 +163,6 @@ python .claude/skills/paper-crawler/scripts/multi_source_crawler.py \
   --output-dir ./papers_smoke
 ```
 
-## Follow-up Screening Workflow
-
-After this skill produces outputs, run the screening workflow:
-
-### Step 1: Load Papers
-
-```bash
-python .claude/skills/paper-crawler/scripts/load_papers_for_screening.py \
-  --abstracts-dir ./papers/abstracts \
-  --metadata-dir ./papers/metadata \
-  --output screening_input.json
-```
-
-This loads papers and outputs a JSON file with titles, abstracts, venues, and years.
-
-### Step 2: Multi-Agent Scoring in Claude Conversation
-
-Spawn 3 parallel subagents to score papers independently. Each agent uses a different system prompt:
-
-**Agent 1 System Prompt:**
-```
-You are Agent-1, a senior researcher specializing in the target research domain.
-Score papers strictly on academic merit. Focus on technical novelty and contribution to the field.
-Always respond with ONLY a JSON object in this exact format:
-{"innovation": <1-4>, "impact": <1-3>, "relevance": <1-3>, "total": <3-10>, "reason": "<one sentence>"}
-```
-
-**Agent 2 System Prompt:**
-```
-You are Agent-2, a professor evaluating papers for top venues in the target domain.
-Be critical and objective. Focus on practical impact and experimental rigor.
-Always respond with ONLY a JSON object in this exact format:
-{"innovation": <1-4>, "impact": <1-3>, "relevance": <1-3>, "total": <3-10>, "reason": "<one sentence>"}
-```
-
-**Agent 3 System Prompt:**
-```
-You are Agent-3, an industry researcher in the target domain.
-Evaluate papers from both academic and practical perspectives.
-Always respond with ONLY a JSON object in this exact format:
-{"innovation": <1-4>, "impact": <1-3>, "relevance": <1-3>, "total": <3-10>, "reason": "<one sentence>"}
-```
-
-**User Prompt Template for Each Agent:**
-```
-Score this paper for a {research_domain} research survey.
-
-Title: {title}
-Venue: {venue} ({year})
-Abstract: {abstract[:1500]}
-
-Scoring criteria:
-- innovation (1-4): novelty of method/problem/finding
-- impact (1-3): venue prestige, potential citations, author team
-- relevance (1-3): fit with {research_domain}
-
-Respond with ONLY the JSON object.
-```
-
-Where `{research_domain}` should be derived from the original crawl query or user context (e.g., "machine learning", "computer vision", "natural language processing", etc.).
-
-Each agent returns a JSON object with:
-- **innovation** (1-4): novelty of method/problem/finding
-- **impact** (1-3): venue prestige, potential citations, author team
-- **relevance** (1-3): fit with the target research domain
-- **total** (3-10): sum of the above scores
-- **reason**: one-sentence justification
-
-### Step 3: Aggregate Scores
-
-Average scores across the 3 agents. Papers with `avg_total >= 7.0` pass to the next stage.
-
-If agents disagree by more than 3 points, add a 4th arbiter agent.
-
-### Step 4: Generate Structured Summaries
-
-For each passed paper, generate a structured summary with these sections:
-- Research Background & Problem (2-3 sentences)
-- Core Innovations (2-3 bullet points)
-- Key Methods & Results (2-3 sentences)
-- Limitations & Future Work (1-2 sentences)
-
-### Step 5: Generate Screening Report
-
-Create a comprehensive Markdown report at `./reports/paper_screening_report.md` with:
-
-**Report Structure:**
-
-```markdown
-# Paper Screening Report
-
-## Statistics Summary
-- Total papers collected: [number]
-- Papers scored: [number]
-- Papers passed (avg >= 7.0): [number]
-- Pass rate: [percentage]
-- Number of agents: 3
-- Scoring criteria: Innovation (1-4), Impact (1-3), Relevance (1-3), Total (3-10)
-
-## Venue Distribution
-- [Venue 1]: [count]
-- [Venue 2]: [count]
-...
-
-## Top Papers (Ranked by Score)
-| Rank | Score | Innovation | Impact | Relevance | Title | Venue |
-|------|-------|------------|--------|-----------|-------|-------|
-| 1    | 9.2   | 4.0        | 2.7    | 2.5       | ...   | ...   |
-...
-
-## All Passed Papers with Summaries
-[For each passed paper, include full structured summary from ./paper_summaries/]
-```
-
-The report should provide complete traceability from raw papers to final selections.
-
 ## Output Requirements
 
 All outputs should be saved to the project working directory, NOT back to `.claude/skills/`:
@@ -291,5 +172,3 @@ All outputs should be saved to the project working directory, NOT back to `.clau
 - Paper abstracts: `./papers/abstracts/*.txt`
 - PDF files (if `--download-pdf` enabled): `./papers/pdfs/*.pdf`
 - Summary statistics: `./papers/metadata/summary_*.json`
-- Structured paper summaries: `./paper_summaries/*.md`
-- Screening report: `./reports/paper_screening_report.md`
