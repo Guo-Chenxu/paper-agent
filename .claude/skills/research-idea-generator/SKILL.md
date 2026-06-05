@@ -20,7 +20,7 @@ Systematic research idea generation and evaluation workflow:
 
 ## When To Use
 
-- Have completed paper collection and screening (e.g., via paper-crawler skill)
+- Have completed paper collection and screening
 - Need to generate novel research ideas from literature review
 - Want systematic gap analysis and idea evaluation
 - Require detailed research proposals with background, hypothesis, and methodology

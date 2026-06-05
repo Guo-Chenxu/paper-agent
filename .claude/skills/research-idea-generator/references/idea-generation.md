@@ -1,6 +1,6 @@
 # Research Idea Generation Reference
 
-Use this reference after paper summaries are available from the paper-crawler skill. Idea generation runs through local Claude Code subagents, not through external API scripts.
+Use this reference after paper summaries are available. Idea generation runs through local Claude Code subagents, not through external API scripts.
 
 ## Workflow
 

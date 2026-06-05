@@ -165,6 +165,7 @@ python .claude/skills/paper-crawler/scripts/multi_source_crawler.py \
   --max-results-per-provider 3 \
   --usenix-venues osdi \
   --workers 2 \
+  --download-pdf \
   --output-dir ./papers_smoke
 ```
 
