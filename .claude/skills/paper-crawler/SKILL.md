@@ -21,6 +21,10 @@ Automated paper collection from multiple providers:
 - Want normalized metadata, deduplication, and CCF A/B venue preference
 - Starting a literature review or research survey workflow
 
+## Execution Time Warning
+
+Paper crawling involves network requests to multiple external APIs, PDF downloads, and cross-provider deduplication, which can take a long time. It is recommended to set the Bash tool timeout to at least **15 minutes** (`timeout: 900000`) when invoking crawler scripts. If the command is still running when the timeout is reached, extend and continue waiting rather than treating it as a failure.
+
 ## Environment
 
 Run crawler commands from the repository root with the active Python interpreter.

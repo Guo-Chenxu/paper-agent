@@ -25,7 +25,7 @@ class OpenAlexCrawler:
 
         max_attempts = 4
         for attempt in range(max_attempts):
-            response = requests.get(self.BASE_URL, params=local_params, timeout=45)
+            response = requests.get(self.BASE_URL, params=local_params, timeout=300)
             if response.status_code == 429 and attempt < max_attempts - 1:
                 time.sleep(self.request_delay * (attempt + 1))
                 continue

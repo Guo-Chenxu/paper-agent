@@ -143,7 +143,7 @@ class ArxivCrawler:
             return False, "missing_pdf_url"
 
         try:
-            response = requests.get(pdf_url, timeout=45)
+            response = requests.get(pdf_url, timeout=300)
         except requests.RequestException as exc:
             return False, f"request_error:{exc.__class__.__name__}"
 

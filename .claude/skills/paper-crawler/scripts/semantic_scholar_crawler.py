@@ -23,7 +23,7 @@ class SemanticScholarCrawler:
         last_error = None
         for attempt in range(3):
             try:
-                response = requests.get(self.BASE_URL, params=params, headers=headers, timeout=45)
+                response = requests.get(self.BASE_URL, params=params, headers=headers, timeout=300)
                 if response.status_code == 429 and attempt < 2:
                     time.sleep(self.request_delay * (attempt + 1))
                     continue

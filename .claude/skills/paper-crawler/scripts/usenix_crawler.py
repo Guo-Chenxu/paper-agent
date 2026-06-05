@@ -85,7 +85,7 @@ class UsenixCrawler:
         self.request_delay = request_delay
 
     def _get(self, url: str) -> str:
-        response = requests.get(url, timeout=45)
+        response = requests.get(url, timeout=300)
         response.raise_for_status()
         return response.text
 

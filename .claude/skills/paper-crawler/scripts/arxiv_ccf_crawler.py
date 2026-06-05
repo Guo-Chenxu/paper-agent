@@ -163,7 +163,7 @@ def detect_venue(text: str) -> str:
     return "arXiv"
 
 
-def download_pdf(pdf_url: str, out_path: str, timeout: int = 60) -> bool:
+def download_pdf(pdf_url: str, out_path: str, timeout: int = 300) -> bool:
     try:
         resp = requests.get(pdf_url, timeout=timeout, allow_redirects=True)
         if resp.status_code == 200 and (

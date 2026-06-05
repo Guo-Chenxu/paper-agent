@@ -112,7 +112,7 @@ class MultiSourcePaperCrawler:
 
     def _download_with_status(self, url: str, out_path: str) -> Tuple[bool, str]:
         try:
-            response = requests.get(url, timeout=45, allow_redirects=True)
+            response = requests.get(url, timeout=300, allow_redirects=True)
         except requests.RequestException as exc:
             return False, f"request_error:{exc.__class__.__name__}"
 
