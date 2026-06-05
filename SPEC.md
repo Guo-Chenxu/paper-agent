@@ -110,11 +110,11 @@
 
 **输出要求**：
 
-- 生成`./reports/research_directions_and_ideas.md`
-- 生成`./reports/research_knowledge_graph.md`
-- 生成`./reports/raw_research_ideas.md`
-- 生成`./reports/idea_evaluation_scores.json`
-- 生成`./reports/idea_reviewer_attack_trace.md`
+- 生成`./reports/research_directions_and_ideas.md`：主报告，含领域现状分析、研究空白、所有idea列表与打分、top 3 idea详细说明
+- 生成`./reports/research_knowledge_graph.md`：研究领域知识图谱，记录已解决/开放问题、现有方法局限性与子领域交叉方向
+- 生成`./reports/raw_research_ideas.md`：3个生成agent的全部原始idea（至少15个），保留原始推理过程供追溯
+- 生成`./reports/idea_evaluation_scores.json`：评估agent对所有idea按创新性/可行性/影响力三维度的打分矩阵
+- 生成`./reports/idea_reviewer_attack_trace.md`：对top 3 idea进行审稿人对抗攻击的完整记录，含问题与修复方案
 
 ---
 
