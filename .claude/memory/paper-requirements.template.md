@@ -13,12 +13,12 @@ metadata:
 
 ## Page Allocation
 
-- Abstract: [页数，例如：0.5]
+- Abstract: [页数，例如：0.3]
 - Introduction: [页数，例如：1.5]
 - Related Work: [页数，例如：1.5]
 - Methodology: [页数，例如：2.0]
 - Experiments: [页数，例如：2.0]
-- Conclusion: [页数，例如：0.5]
+- Conclusion: [页数，例如：0.3]
 
 ## Reference Requirements
 
