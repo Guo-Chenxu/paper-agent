@@ -54,7 +54,7 @@
 
 **执行步骤**：
 
-1. 论文收集：使用 `.claude/skills/paper-crawler` skill 的多provider爬虫，根据**阶段0记忆文件中指定的研究方向**和人类指定的**时间范围**（默认近3年）从OpenAlex、arXiv、Semantic Scholar、USENIX等公开来源自动搜索论文元数据和摘要。要求：
+1. 论文收集：使用 `.claude/skills/paper-crawler` skill 的多provider爬虫以及自带的 web search 工具，根据**阶段0记忆文件中指定的研究方向**和人类指定的**时间范围**（默认近3年）从OpenAlex、arXiv、Semantic Scholar、USENIX、DBLP、Google Scholar等公开来源自动搜索论文元数据和摘要。要求：
    - 候选论文至少收集到**200篇**（上限不限制，越多越好）后才能进行下一阶段
    - 所有查询关键词必须来自外部输入，收集过程中可以根据已有论文和方向优化关键词以保证收集到的论文更符合要求
    - 爬虫运行产物保存到`./papers/`目录，不将流程运行结果写回`.claude/skills/`源代码目录
