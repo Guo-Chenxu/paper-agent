@@ -163,3 +163,127 @@ Replace the hyphen/en-dash with `\sim` inside math mode. Examples:
 - `5-10$\times$` → `$5\sim10\times$`
 - `10-20\%` → `$10\sim20\%$`
 - `$2-3$ hours` → `$2\sim3$ hours`
+
+---
+
+### 10. Define Metrics, Algorithms, and Baselines on First Use
+
+**Signals**
+
+- A metric (e.g., F1, recall, AUC, p99 latency), algorithm acronym (e.g., SGD, PCA, KNN), or baseline label is used without explanation.
+- The reader cannot understand the term from surrounding text without external knowledge or a prior paper.
+
+**Check**
+List every metric, algorithm acronym, and baseline label in the paper. For each first occurrence, confirm a concise definition or intuition appears nearby. Pay extra attention to evaluation sections where metrics and baselines are introduced in bulk.
+
+**Fix**
+On first use, add a brief definition. For metrics, state what they measure and their range/meaning. For algorithms, give the core idea in one sentence. For baselines, describe what each assumes or optimizes so the contrast with the proposed method is clear.
+
+---
+
+### 11. Inconsistency Across Introduction, Method, and Conclusion
+
+**Signals**
+
+- The introduction or conclusion describes a single algorithm, but the method section actually uses a hybrid or extended version (or vice versa).
+- A component named in the introduction is dropped, renamed, or contradicted in the method or conclusion.
+- The conclusion claims a property (e.g., "no offline training", "online only", "parameter-free") that the method section qualifies or contradicts.
+
+**Check**
+For each contribution and algorithm, compare how it is described across the abstract, introduction, method, and conclusion. Confirm names, components, and scope match end-to-end.
+
+**Fix**
+Pick one canonical description and propagate it across all sections. If a hybrid method is used, say so in the introduction and conclusion, not only inside the method section.
+
+---
+
+### 12. Echo Contributions in the Conclusion
+
+**Signals**
+
+- The conclusion summarizes numerical results but does not revisit the contributions stated in the introduction.
+- The introduction lists N contributions, but the conclusion discusses only a subset or introduces new claims.
+
+**Check**
+Copy the contribution list from the introduction. Check that the conclusion explicitly restates each contribution and ties it to the reported outcome. Flag conclusions that focus on results without structurally mirroring the intro.
+
+**Fix**
+Restructure the conclusion to mirror the introduction's contribution list: restate each contribution, report its outcome, and avoid introducing claims not foreshadowed earlier. Headline results should support contributions, not replace them.
+
+---
+
+### 13. Contribution-Centric Narrative Throughout
+
+**Signals**
+
+- The paper dives into implementation details without reminding the reader which contribution each part supports.
+- A reviewer can follow individual sentences but loses the thread connecting sections to the stated contributions.
+- Sections read as a sequence of technical choices rather than a sustained argument for the contributions.
+
+**Check**
+For each section, note which contribution it advances. Flag sections where the connection to the contribution list is implicit for more than a paragraph. Look for places where the contribution is assumed obvious rather than restated.
+
+**Fix**
+At section transitions and key subsection openings, briefly restate which contribution the upcoming material addresses. When a design choice serves a specific contribution, say so explicitly. Stand in the reader's position: the contribution list should be visible from any page, not only the introduction.
+
+---
+
+### 14. Precise Terminology Scope
+
+**Signals**
+
+- A term implying a hardware/software scope (e.g., "cluster", "node", "machine", "device", "distributed", "edge") is used when the actual setup differs in scope.
+- The reader may infer a different topology, cost model, or deployment than intended.
+- A cost model silently excludes or includes a scope the terminology does not signal.
+
+**Check**
+Identify terms that imply a scope. Verify the scope matches the actual setup. If a broader term is kept while the scope is narrower (or vice versa), confirm the cost model covers the gap or state what is excluded.
+
+**Fix**
+Either use the precise term, or explicitly state what is included. For example, if a broader deployment term (e.g., "cluster") is kept while the system actually targets components within a single node, state whether inter-node costs are part of the model.
+
+---
+
+### 15. Discuss Method Overhead
+
+**Signals**
+
+- A non-trivial proposed component is introduced without reporting its runtime, memory, or system cost.
+- The reader cannot judge whether the method is practical or whether gains are offset by overhead.
+- Overhead is mentioned qualitatively (e.g., "low overhead", "negligible cost") without a measured value.
+
+**Check**
+For each non-trivial proposed component, look for a sentence or paragraph reporting its overhead (latency, throughput impact, memory footprint, or fraction of total runtime). Flag qualitative overhead claims with no number nearby.
+
+**Fix**
+Add a brief overhead analysis per component. If overhead is negligible, state the measured cost. If significant, quantify the trade-off and show it is accounted for in the evaluation.
+
+---
+
+### 16. Avoid Leading with Experimental Results in the Introduction
+
+**Signals**
+
+- The introduction foregrounds specific percentage improvements or experiment figures before the problem and approach are established.
+- Numerical results (e.g., "reduces X by Y%") appear as the main content of an introduction paragraph rather than as a brief headline.
+
+**Check**
+Read each introduction paragraph. Flag sentences reporting detailed numeric improvements that appear before the approach is sketched. Leading an introduction with experiment results is unusual and shifts focus away from motivation.
+
+**Fix**
+Keep the introduction focused on problem, motivation, and approach. Move detailed quantitative results to the evaluation section. A single brief headline result is acceptable only after the approach is introduced.
+
+---
+
+### 17. Clarify Which State or Timepoint a Value Refers To
+
+**Signals**
+
+- A value, threshold, or measurement is given without specifying whether it refers to the state before or after an event (e.g., before/after a detected change point, before/after a triggered action, during a stable segment).
+- A classification rule uses thresholds on variables without saying which window or timepoint the variables are sampled from.
+
+**Check**
+For each threshold, measured value, or classification condition tied to an event, confirm the text states whether the value is sampled before, during, or after the event. Pay attention to change-point detection, trigger conditions, and transition rules.
+
+**Fix**
+Add a phrase specifying the timepoint and window (e.g., "the metric measured in the window immediately after the detected event", "the signal averaged over the window preceding the trigger"). Make classification rules explicit about which segment of the signal feeds the condition.
