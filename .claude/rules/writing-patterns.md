@@ -287,3 +287,83 @@ For each threshold, measured value, or classification condition tied to an event
 
 **Fix**
 Add a phrase specifying the timepoint and window (e.g., "the metric measured in the window immediately after the detected event", "the signal averaged over the window preceding the trigger"). Make classification rules explicit about which segment of the signal feeds the condition.
+
+---
+
+### 18. Topic-First Paragraph Structure
+
+**Signals**
+
+- A paragraph dives into details without a clear opening sentence that summarizes the point.
+- The reader must finish the entire paragraph to understand its purpose.
+- The topic sentence is buried in the middle or appears at the end.
+
+**Check**
+Read the first sentence of each paragraph in isolation. If the first sentence does not convey the paragraph's main point, the structure needs revision. Flag paragraphs where the opening sentence is a transitional phrase, a background detail, or a subordinate observation.
+
+**Fix**
+Restructure: lead with a short, direct sentence that states the paragraph's claim or purpose. Follow with supporting explanation, evidence, or elaboration. The reader should grasp the paragraph's role from the first sentence alone.
+
+---
+
+### 19. Sentence Rhythm and Length Variation
+
+**Signals**
+
+- Multiple consecutive long sentences (more than 25 words each) with no short sentence breaking the rhythm.
+- Sentences overloaded with adjectives, adverbs, or stacked prepositional phrases.
+- The prose feels monotonous or dense because every sentence has similar length and structure.
+
+**Check**
+Scan paragraphs for runs of three or more long sentences. Flag sentences with more than three adjectives or modifiers on a single noun phrase. Check whether any short sentence (under 12 words) appears between longer ones to provide rhythm.
+
+**Fix**
+Break adjective-heavy sentences into shorter ones. Alternate short and long sentences within each paragraph. A short sentence after a complex one gives the reader a place to rest. Prefer: short declarative sentence → longer explanatory sentence → short concluding sentence.
+
+---
+
+### 20. No Coined or Invented Terminology
+
+**Signals**
+
+- A technical term appears that has no established usage in the field's literature.
+- A compound noun or phrase is created ad hoc to label a concept (e.g., "read-wire edge" when no prior work uses this term).
+- The reader cannot find the term in standard references or related papers.
+
+**Check**
+For each technical term, verify it appears in prior published work, textbooks, or standard references. Pay special attention to compound nouns and hyphenated phrases. If a term cannot be found in existing literature, it is likely coined.
+
+**Fix**
+Replace coined terms with established terminology from the field. If no single existing term captures the concept, describe it using known terms (e.g., "the latency of reading from the edge cache" instead of inventing "read-edge latency"). If a new term is genuinely necessary, define it explicitly on first use and justify why existing vocabulary is insufficient.
+
+---
+
+### 21. Polysemous Word Ambiguity
+
+**Signals**
+
+- A word that can serve as multiple parts of speech (noun, verb, adjective) is used without syntactic cues to disambiguate (e.g., "read" as noun vs. verb, "edge" as graph edge vs. network edge, "wire" as noun vs. verb).
+- The reader must guess the intended part of speech or meaning from context alone.
+- The sentence parses differently depending on which meaning is assumed.
+
+**Check**
+Search for common polysemous words in the domain (read, write, edge, wire, cache, block, page, frame, state, model, train, test, set, run, match, switch, port, host, pipe, fork, flag, trace, register, mount, link, route, patch, pool, lock, watch, probe, map, address, bus, chip, stack, queue, process). For each occurrence, read the sentence and confirm only one parsing is natural.
+
+**Fix**
+Add syntactic disambiguation: use articles ("a read operation" vs. "to read"), prepositions, or rephrase to make the part of speech unambiguous. If a word has multiple technical meanings in the same paper (e.g., "edge" for both graph topology and network edge), define each meaning on first use and prefer different terms where possible.
+
+---
+
+### 22. Formal Register in Academic Writing
+
+**Signals**
+
+- Colloquial or conversational phrasing appears (e.g., "basically", "kind of", "a lot of", "stuff", "get rid of", "figure out", "deal with").
+- Contractions in prose (e.g., "doesn't", "can't", "it's" for "it is").
+- Overly casual connectors (e.g., "so", "also" at sentence start, "plus").
+
+**Check**
+Search for common informal markers: contractions, phrasal verbs that have single-word formal equivalents, hedging fillers, and colloquial intensifiers. Flag any word or phrase that would sound natural in spoken conversation but not in a published journal paper.
+
+**Fix**
+Replace with formal equivalents: "figure out" → "determine", "get rid of" → "eliminate", "a lot of" → "numerous" or a specific quantity, "deal with" → "handle" or "address", "basically" → remove or replace with precise qualifier. Expand all contractions. Use single-word verbs over phrasal verbs where a precise equivalent exists.
