@@ -44,7 +44,20 @@ cp .env.template .env
 
 在 `.env` 中填写必要的环境变量以保证能够正常使用各个 skill
 
-4. 运行
+4. 替换运行占位符
+
+根据自己的实际环境替换 `CLAUDE.md` 中的两个占位符：
+
+- 将 `<PYTHON_ENV>` 替换为实际 Python 环境名，例如替换为 `paper-agent`
+- 将 `<PDFLATEX_CMD>` 替换为实际 LaTeX 编译命令，例如替换为 `pdflatex`
+
+例如，可以用一行命令完成替换：
+
+```bash
+sed 's|<PYTHON_ENV>|paper-agent|g; s|<PDFLATEX_CMD>|pdflatex|g' CLAUDE.md > CLAUDE.md.tmp && mv CLAUDE.md.tmp CLAUDE.md
+```
+
+5. 运行
 
 打开 claude code，输入 prompt：
 
@@ -52,7 +65,7 @@ cp .env.template .env
 根据 @SPEC.md 中的流程寻找 idea，撰写论文并审阅和修改，所有代码操作都在 paper-agent 这个 conda 环境下执行
 ```
 
-5. 修改
+6. 修改
 
 ```txt
 /paper-annotation-reviser 根据批注文件 @paper-pizhu.pdf 修改原论文 @paper/paper.tex
