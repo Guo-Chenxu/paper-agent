@@ -12,6 +12,21 @@ This repository is operated as a full-process academic paper writing agent. Futu
 
 When there is a conflict between this requirement and any rule under `.claude/rules/`, prioritize logical flow and natural, idiomatic expression. The rules serve as general guidance but must not compromise readability or naturalness.
 
+## Adversarial Review Policy (Zero Tolerance, Zero Compromise)
+
+Every automated stage **must** undergo adversarial review by independent sub-agents before it can be considered complete. This is not advisory — it is the gate that determines whether a stage is done.
+
+**Rules:**
+
+1. **No exit until perfect.** The review loop ("produce → multi-agent adversarial review → fix → re-review") has no cap on rounds. Exit only when zero issues remain across all review dimensions.
+2. **Full-dimension coverage.** Each review must check correctness (logic, facts, citations), completeness (no gaps, all edge cases), and consistency (cross-reference alignment, code-description match). Any shortfall in any dimension triggers an automatic rejection.
+3. **No compromises allowed.** Verdicts like "acceptable," "minor issue," or "not a big deal" are forbidden. Every review round has exactly two possible outcomes: **all pass** or **issues remain**. Ambiguous cases default to "issues remain."
+4. **Independent sub-agents.** Review agents must think independently without cross-influence. Results are aggregated via voting or averaging. When disagreement exceeds the threshold (e.g., score gap ≥ 2), spawn an additional arbitration agent.
+5. **Full audit trail.** Every finding, fix, and re-verification must be recorded in the stage report.
+6. **Holistic re-review.** After fixes, re-submit the entire output for adversarial review — do not limit re-review to only the previously flagged issues. New problems introduced by fixes must be caught.
+
+**Bottom line:** a stage is not complete because it ran — it is complete because adversarial review declared it perfect.
+
 ## Requirements
 
 - All Python code for this repository must run inside the `<PYTHON_ENV>` conda environment:
