@@ -62,7 +62,7 @@ sed 's|<PYTHON_ENV>|paper-agent|g; s|<PDFLATEX_CMD>|pdflatex|g' CLAUDE.md > CLAU
 打开 claude code，输入 prompt：
 
 ```txt
-根据 @SPEC.md 中的流程寻找 idea，撰写论文并审阅和修改
+根据 @SPEC.md 中的流程寻找 idea，完成实验，撰写论文并审阅和修改
 ```
 
 6. 修改
