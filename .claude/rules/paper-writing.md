@@ -46,7 +46,6 @@
 ## Formatting
 
 - Subfigures also need subtitles. A short explanation can follow the figure title, and the caption should explain what the figure means.
-- Use grayscale figures and avoid color when possible.
 - The paper should be rich with visuals alongside text. Use figures, tables, diagrams, architecture overviews, and workflow illustrations to break up dense prose. A paper that is pure text with few or no visuals is tedious to read. Aim for roughly one visual element (figure, table, or diagram) per 1-2 pages. Visuals should not just decorate — each must convey information that would be cumbersome to describe in text alone.
 
 ## Useful Websites
