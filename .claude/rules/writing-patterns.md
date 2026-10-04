@@ -367,3 +367,23 @@ Search for common informal markers: contractions, phrasal verbs that have single
 
 **Fix**
 Replace with formal equivalents: "figure out" → "determine", "get rid of" → "eliminate", "a lot of" → "numerous" or a specific quantity, "deal with" → "handle" or "address", "basically" → remove or replace with precise qualifier. Expand all contractions. Use single-word verbs over phrasal verbs where a precise equivalent exists.
+
+---
+
+### 23. No Colloquial "so" or ", so"
+
+**Signals**
+
+- A comma followed by "so" joins two clauses as a loose consequence ("The dataset is small, so we augment it").
+- "So" opens a sentence as a conversational connector ("So the method fails when...").
+- "So" is used as a filler or emphasis word ("so good", "so much faster") in place of a precise qualifier.
+
+**Check**
+Search for `\bso\b` in prose (excluding math, code, and fixed phrases such as "so that" and "so as to"). For each occurrence, confirm whether it introduces a consequence, opens a sentence, or acts as an intensifier. Flag every instance that reads as spoken rather than written English.
+
+**Fix**
+
+- Consequence clause → split into two sentences, or use a formal connector: "therefore", "thus", "as a result", "consequently", or ", and therefore".
+- Sentence-initial "so" → remove it and start with the subject, or use "Thus," / "Therefore," only when the logical link is genuine.
+- Intensifier "so" → replace with a precise qualifier: "so fast" → "fast enough to meet the latency budget" or a measured value.
+- Keep "so that" and "so as to" only when they express purpose and no cleaner construction exists.
