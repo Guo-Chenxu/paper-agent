@@ -387,3 +387,42 @@ Search for `\bso\b` in prose (excluding math, code, and fixed phrases such as "s
 - Sentence-initial "so" → remove it and start with the subject, or use "Thus," / "Therefore," only when the logical link is genuine.
 - Intensifier "so" → replace with a precise qualifier: "so fast" → "fast enough to meet the latency budget" or a measured value.
 - Keep "so that" and "so as to" only when they express purpose and no cleaner construction exists.
+
+---
+
+### 24. No Defensive Writing with "Rather Than" or Negation-Contrast Patterns
+
+**Signals**
+
+- Phrases such as "X rather than Y", "X instead of Y", "not Y but X", "is X, not Y" that defensively position the work against an imagined objection.
+- The sentence structure assumes the reader will confuse X with Y and preemptively rebuts a misunderstanding that was not raised.
+- The prose spends more words on what the method is NOT than on what it IS.
+
+**Check**
+Search for `rather than`, `instead of`, `not .* but`, `is .*, not`, and similar negation-contrast patterns. For each occurrence, determine whether the contrast addresses a genuine ambiguity in the immediate context or whether it defensively anticipates an objection. Flag sentences where the positive claim alone would be clearer.
+
+**Fix**
+
+- State what the method IS directly: "X uses approach A" rather than "X uses approach A rather than approach B".
+- If a contrast is necessary to resolve genuine ambiguity, present both options neutrally first, then state the choice: "Two approaches exist: A and B. This work adopts A because [reason]."
+- Remove negation clauses that assume a misunderstanding the text has not invited. Trust the reader to understand the positive claim without preemptive rebuttal.
+- Keep contrasts only when comparing to a specific baseline, prior work, or alternative that the reader already knows and might reasonably assume applies here.
+
+---
+
+### 25. Direct Affirmative Statement Over Negation-First Construction
+
+**Signals**
+
+- Sentences begin with "It is not the case that", "X does not mean Y", "We do not claim", or other negation-first structures.
+- The sentence structure is: [what it is NOT] followed by [what it IS].
+- The reader must parse the negation before arriving at the actual claim.
+
+**Check**
+Search for sentence-initial negations: `\bNot\b`, `\bNo\b`, `does not`, `do not`, `is not`, `are not`, `cannot`, `It is not`. For each, check whether the sentence could be rephrased to lead with the affirmative claim. Flag sentences where the negation is the main clause and the affirmative is subordinate or appears only after a contrast word.
+
+**Fix**
+
+- Lead with the affirmative: "X achieves Y" instead of "X does not fail to achieve Y" or "It is not the case that X fails; rather, X achieves Y".
+- If a negation is necessary to correct a specific misconception from prior text, state it briefly and move immediately to the affirmative: "Although prior work assumed A, this work demonstrates B."
+- Remove double negatives and negation chains. Prefer the simplest affirmative form that conveys the intended meaning.
