@@ -133,21 +133,21 @@
 
 ---
 
-### 阶段10：论文最终优化
+### 阶段10：白痴外行人审阅
+
+使用 `.claude/skills/idiot-reviewer` skill，以零上下文的外行人视角逐段阅读论文，标记所有不理解的问题。主流程收到问题清单后逐条审查并修改论文，再次提交审阅，循环直至无新问题产生。
+
+**输出**：`./reports/idiot_review_report.md`、更新后的 `./paper/paper.tex` 和 `./paper/paper.pdf`
+
+---
+
+### 阶段11：论文最终优化
 
 1. 语言质量检查：修正语法、拼写、用词、逻辑连贯性、句式问题
 2. 图文一致性检查：正文对所有图表/算法/公式的描述与实际一致，引用完整
 3. AI痕迹检测：调用 `.claude/skills/ai-detector` 逐部分检测并修改
 
 **输出**：最终 `./paper/paper.tex`、`./paper/paper.pdf`、`./reports/final_optimization_report.md`
-
----
-
-### 阶段11：白痴外行人审阅
-
-使用 `.claude/skills/idiot-reviewer` skill，以零上下文的外行人视角逐段阅读论文，标记所有不理解的问题。主流程收到问题清单后逐条审查并修改论文，再次提交审阅，循环直至无新问题产生。
-
-**输出**：`./reports/idiot_review_report.md`、更新后的 `./paper/paper.tex` 和 `./paper/paper.pdf`
 
 ---
 
