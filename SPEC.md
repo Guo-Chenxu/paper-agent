@@ -127,7 +127,7 @@
 
 ### 阶段9：模拟审稿与Rebuttal
 
-使用 `.claude/skills/reviewer-attack` skill，启动严格型、建设性、新手型3个审稿人agent独立生成审稿意见。汇总后逐条修改论文，生成Rebuttal回复信，重新编译PDF并检查编译日志。
+使用 `.claude/skills/reviewer-attack` skill，启动严格型、建设性、新手型3个审稿人agent独立生成审稿意见。汇总后逐条修改论文，重新编译PDF并检查编译日志。
 
 **输出**：`./reports/simulated_review_report.md`、`./paper/rebuttal.tex`、更新后的 `./paper/paper.tex` 和 `./paper/paper.pdf`
 
