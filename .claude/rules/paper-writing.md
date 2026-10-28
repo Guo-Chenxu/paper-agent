@@ -17,7 +17,7 @@
 
 - The introduction should serve as a condensed version of the whole paper.
 - The introduction should contain rich content, and its structure should align with the later sections of the paper.
-- Repeatedly describe the advantages of the design.
+- Emphasize the advantages of the design across sections.
 - Cite prior work and clearly state its limitations.
 - The contribution section should cover the full paper and explain each contribution clearly.
 
@@ -38,9 +38,9 @@
 - Use formal, written academic wording. Avoid colloquial expressions, conversational phrasing, and informal contractions.
 - Avoid stacking more than three nouns. When necessary, use prepositions such as "of" and "for" to split noun phrases.
 - Countable nouns should either take an article such as "a" or appear in plural form.
-- Avoid repeating the same word too often. Use appropriate synonyms when possible.
+- Avoid repeating the same word too often. Use appropriate synonyms for non-technical words; keep technical terms and the system name consistent.
 - Each paragraph should express only one main idea. A topic-first structure is preferred: the first sentence summarizes the paragraph's main point, and the following sentences elaborate on it.
-- Do not use two sentences to express the same meaning. Do not repeat information that has already been stated.
+- Do not use two sentences to express the same meaning. Do not repeat information that has already been stated, except for the condensed contribution echo in the conclusion.
 - Use precise wording. Some words have both broad and narrow meanings, so choose the meaning carefully. For example, "heterogeneous" usually refers to settings such as CPU-GPU heterogeneity.
 
 ## Formatting
