@@ -1,6 +1,6 @@
 ---
 name: idiot-reviewer
-description: "Use when a paper draft is complete and needs a 'zero-context layperson' review. The idiot-reviewer reads the paper paragraph by paragraph as a complete outsider with no prior knowledge of the research domain, asking every question a non-expert would have. This catches readability and accessibility issues that expert reviewers overlook. Use after paper completion (post Stage 10 of SPEC.md) to ensure the paper is understandable to any reader."
+description: "Use when a paper draft is complete and needs a 'zero-context layperson' review. The idiot-reviewer reads the paper paragraph by paragraph as a complete outsider with no prior knowledge of the research domain, asking every question a non-expert would have. This catches readability and accessibility issues that expert reviewers overlook. Use after paper completion and simulated peer review to ensure the paper is understandable to any reader."
 user-invocable: true
 ---
 
@@ -9,7 +9,7 @@ user-invocable: true
 ## When To Use
 
 Use this skill when the paper draft is complete and all other reviews have been addressed:
-1. After simulated peer review and final optimization (post Stage 10 of SPEC.md).
+1. After simulated peer review and final optimization.
 2. As a final readability check before human submission.
 3. To catch clarity issues that domain experts would gloss over due to their familiarity with the field.
 
@@ -46,6 +46,7 @@ For every single issue, record:
 1. **Location**: Which section and paragraph (quote the text)
 2. **Question**: What exactly don't you understand?
 3. **Why it matters**: Why would a reader be confused here?
+4. **Severity**: **Blocking** if the confusion prevents understanding the problem, motivation, method, core claims, or experimental conclusions. **Suggestion** if it concerns a peripheral detail that does not affect the main story.
 
 ### Step 4: Be Ruthlessly Strict
 
@@ -116,3 +117,8 @@ For each section and paragraph:
 3. Do NOT evaluate technical correctness. Only evaluate understandability.
 4. DO ask "stupid" questions. There are no stupid questions in this review.
 5. Be specific: quote the exact text that confuses you, don't give vague feedback.
+6. List every question you have in this single pass. Do not hold any back for a later review.
+
+## After the Review
+
+The main agent fixes blocking issues and adopts suggestions at its discretion, noting in `reports/idiot_review_report.md` why any skipped item was left unchanged. Any blocking issue that cannot be resolved is recorded in the report for human review. Whether to run another review pass is decided by the caller.

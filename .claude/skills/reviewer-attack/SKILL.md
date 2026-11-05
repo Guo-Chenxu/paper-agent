@@ -82,12 +82,22 @@ Then provide:
 - Total score and verdict (see score-to-verdict mapping)
 - Summary: one paragraph restating what was reviewed
 - Strengths: what works well (at least 3 items)
-- Major issues: problems that significantly lower scores, with specific evidence
-- Minor issues: presentation or clarity improvements
+- Blocking issues: problems that break the story, leave a core claim without supporting evidence, omit details needed to understand or reproduce the core contributions, or violate academic integrity, with specific evidence
+- Suggestions: polish or improvements that do not affect the points above
 - Actionable suggestions: ranked by priority
 
+List every issue you find in this single review. Do not hold any back for a later round.
+Do not treat peripheral details unrelated to the core contributions as blocking.
 Base all criticism on what is ACTUALLY present in the artifact. Do not assume missing content exists.
 ```
+
+## Multi-Round Use
+
+When the caller runs this skill repeatedly as a review loop:
+
+- Stop once a round reports no blocking issues. If the caller sets a round cap, do not exceed it.
+- In re-review rounds, pass the previous round's issue list and fix notes to each reviewer. Reviewers check whether those issues were fixed and whether the fixes introduced new problems. For unchanged content, raise only new blocking issues.
+- If blocking issues remain when the round cap is reached, record them in the report as unresolved for human review.
 
 ## Output Format
 
@@ -95,5 +105,5 @@ The final `reports/simulated_review_report.md` contains:
 
 1. **Per-reviewer scores table**: All three reviewers, all dimensions side-by-side
 2. **Consensus verdict**: Averaged scores + final recommendation
-3. **Consolidated issues**: Merged issue list, deduplicated and ranked by severity
+3. **Consolidated issues**: Merged issue list, deduplicated, split into blocking issues and suggestions, ranked by severity
 4. **Disagreement analysis**: Where reviewers diverged significantly and why

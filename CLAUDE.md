@@ -12,20 +12,32 @@ This repository is operated as a full-process academic paper writing agent. Futu
 
 When there is a conflict between this requirement and any rule under `.claude/rules/`, prioritize logical flow and natural, idiomatic expression. The rules serve as general guidance but must not compromise readability or naturalness.
 
-## Adversarial Review Policy (Zero Tolerance, Zero Compromise)
+## Adversarial Review Policy
 
-Every automated stage **must** undergo adversarial review by independent sub-agents before it can be considered complete. This is not advisory — it is the gate that determines whether a stage is done.
+Every automated stage undergoes adversarial review by independent sub-agents before moving on. Papers and other artifacts always have some flaws. The goal is a solid output that supports the next stage, not perfection.
 
-**Rules:**
+**Pass criteria:**
 
-1. **No exit until perfect.** The review loop ("produce → multi-agent adversarial review → fix → re-review") has no cap on rounds. Exit only when zero issues remain across all review dimensions.
-2. **Full-dimension coverage.** Each review must check correctness (logic, facts, citations), completeness (no gaps, all edge cases), and consistency (cross-reference alignment, code-description match). Any shortfall in any dimension triggers an automatic rejection.
-3. **No compromises allowed.** Verdicts like "acceptable," "minor issue," or "not a big deal" are forbidden. Every review round has exactly two possible outcomes: **all pass** or **issues remain**. Ambiguous cases default to "issues remain."
-4. **Independent sub-agents.** Review agents must think independently without cross-influence. Results are aggregated via voting or averaging. When disagreement exceeds the threshold (e.g., score gap ≥ 2), spawn an additional arbitration agent.
-5. **Full audit trail.** Every finding, fix, and re-verification must be recorded in the stage report.
-6. **Holistic re-review.** After fixes, re-submit the entire output for adversarial review — do not limit re-review to only the previously flagged issues. New problems introduced by fixes must be caught.
+- **The story holds together.** Problem, motivation, method, experiments, and conclusions connect logically, with no breaks or contradictions.
+- **The experimental logic is closed.** Every core claim is backed by an experiment or evidence, the setup matches the conclusions, and all data come from actually running the code.
+- **Necessary details are present.** Definitions, settings, parameters, and citations needed to understand and reproduce the core contributions are given, and text, figures, and code stay consistent.
+- **Peripheral details are not required.** Minor implementation details, wording preferences, and optional elaborations unrelated to the core contributions need not be exhaustive and never block a stage.
 
-**Bottom line:** a stage is not complete because it ran — it is complete because adversarial review declared it perfect.
+**Issue severity.** Reviewers label every finding as one of:
+
+- **Blocking:** violates the pass criteria above or the non-negotiable principles in `SPEC.md` (academic integrity, reproducibility, citation traceability). Must be fixed.
+- **Suggestion:** polish or optimization that does not affect the pass criteria. Adopt at the main agent's discretion. Suggestions never keep the loop running.
+
+**Loop rules:**
+
+1. **Loop and round caps.** The loop is "produce → multi-agent adversarial review → fix → re-review". Exit as soon as a round reports no blocking issues. When a stage in `SPEC.md` specifies a round cap, follow that cap.
+2. **Report everything at once.** Each review round lists every issue the reviewer finds. Do not hold back findings for later rounds.
+3. **Focused re-review.** Re-review checks whether previous issues were fixed and whether the fixes introduced new problems. For content already reviewed and unchanged, only new blocking issues may be raised, and no new suggestions are added.
+4. **Hitting the cap.** For a stage with a round cap, if blocking issues remain when the cap is reached, stop the loop, record the remaining issues and why they were not resolved in the stage report, proceed to the next stage, and raise them for human judgment at the next `[HUMAN INTERVENTION REQUIRED]` checkpoint.
+5. **Independent sub-agents.** Review agents think independently without cross-influence. Results are aggregated via voting or averaging. When disagreement exceeds the threshold (e.g., score gap ≥ 2), spawn an additional arbitration agent.
+6. **Full audit trail.** Every finding, fix, and re-verification is recorded in the stage report.
+
+**Bottom line:** adversarial review gates each stage against the pass criteria above, not against zero flaws.
 
 ## Requirements
 
