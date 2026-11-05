@@ -1,7 +1,7 @@
 ---
 name: image-gen
-description: "Use when creating academic paper figures, architecture diagrams, flowcharts, method illustrations, supplemental figures, or converting generated images to same-name PDFs. Reads IMAGE_GEN_* model settings from .env and supports gpt-image-compatible providers."
-argument-hint: "Enter the image purpose, paper context, prompt, and output filename, for example fig_architecture"
+description: "Use when creating academic paper figures, architecture diagrams, flowcharts, method illustrations, or supplemental figures. The model writes the figure directly as SVG, renders it with headless Chromium (or rsvg-convert), inspects the PNG plus automatic layout checks, and revises the SVG until it passes a visual checklist, then exports a vector PDF for LaTeX."
+argument-hint: "Enter the figure purpose, paper context, and output filename, for example fig_architecture"
 user-invocable: true
 ---
 
@@ -9,71 +9,142 @@ user-invocable: true
 
 ## When To Use
 
-Use this skill when a paper or report needs generated visual material:
+Use this skill when a paper or report needs a hand-designed figure:
 
-1. Generate architecture diagrams, flowcharts, method illustrations, and other figures that need to be inserted into a paper.
-2. Add or redraw figures based on writing, reviewer, or human feedback.
-3. Save a generated image to `figures/` and provide a same-name PDF.
+1. Architecture diagrams, flowcharts, pipelines, and method illustrations.
+2. Figures added or redrawn based on writing, reviewer, or human feedback.
 
-Do not use this skill for experiment plots that should be produced from measured data. Those belong in the experiment/visualization code.
+Do not use this skill for experiment plots. Plots must be produced from measured data by the experiment/visualization code.
 
-## Configuration
+## Renderers
 
-The script reads model configuration from repository `.env`:
+No API key or external image model is needed. Two renderers are supported, and both produce a vector PDF with embedded fonts and a page size equal to the SVG canvas.
 
-- `IMAGE_GEN_API_KEY`
-- `IMAGE_GEN_BASE_URL`
-- `IMAGE_GEN_MODEL`
-- `IMAGE_GEN_VENDOR`
+| | Chromium (`render_svg.py`, default) | `rsvg-convert` (librsvg) |
+|---|---|---|
+| SVG features | Full, including `<foreignObject>` with HTML/CSS, filters, masks, web fonts | Filters, markers, gradients, masks, CSS; `<foreignObject>` content is silently dropped |
+| Automatic layout report | Yes | No, visual inspection only |
+| Footprint | Python package plus a ~110 MB browser | One small CLI binary, starts instantly |
 
-Supported vendor values:
+Use Chromium by default. Use `rsvg-convert` when Chromium is unavailable or for fast previews of figures that contain no `<foreignObject>`.
 
-- `gemini`: calls Gemini-style `generateContent` image output.
-- `openai` or `gpt-image`: calls OpenAI-compatible `/v1/images/generations`.
-
-For gpt-image, set for example:
+Install Chromium inside the project conda environment:
 
 ```bash
-IMAGE_GEN_VENDOR=gpt-image
-IMAGE_GEN_MODEL=gpt-image-1
+conda run -n <PYTHON_ENV> python -m pip install playwright==1.58.0
+conda run -n <PYTHON_ENV> python -m playwright install --with-deps chromium
 ```
 
-## Workflow
-
-1. Write a precise prompt that includes the figure purpose, desired layout, labels, and academic style.
-2. Run the generator from the repository root.
-3. Verify both image and PDF outputs exist in `figures/`.
-4. Insert the PDF in LaTeX unless the template specifically requires raster images.
-
-Example:
+Install `rsvg-convert`:
 
 ```bash
-python .claude/skills/image-gen/scripts/generate_image.py \
-  --name fig_architecture \
-  --prompt "Create a clean academic architecture diagram for ... Use white background, vector-like style, and readable labels."
+sudo apt install librsvg2-bin   # Debian/Ubuntu
+brew install librsvg            # macOS
 ```
 
-Expected outputs:
+Both renderers resolve font families through fontconfig, so a font that is not installed falls back silently (for example, Helvetica becomes DejaVu Sans). Check the actual font with `fc-match "<family>"` and confirm it in the PNG preview.
 
-- `figures/fig_architecture.png` or `figures/fig_architecture.jpg`
-- `figures/fig_architecture.pdf`
+## Outputs
+
+- `figures/<name>.svg`: editable source, written by the model.
+- `figures/<name>.pdf`: vector PDF sized to the SVG, inserted into LaTeX.
+- `figures/.preview/<name>.png`: raster preview used only for inspection. Delete it once the figure is final.
 
 ## Script
 
-- `scripts/generate_image.py`: loads `.env`, calls the configured image model, saves the generated image under `figures/`, then converts it to PDF.
-- `scripts/image2pdf.py`: converts an existing generated image into a same-name PDF vector wrapper.
+`scripts/render_svg.py` loads the SVG in Chromium, writes the PNG and/or PDF, and prints a JSON report:
 
-Required PDF conversion dependency:
+```json
+{"size_pt": [504.0, 220.0], "png": "...", "pdf": "...", "issues": ["overflows box: text #lbl-cache \"Shared KV cache\""]}
+```
+
+`issues` lists layout problems detected from rendered geometry: text off the canvas, text overflowing its enclosing `<rect>`, overlapping text, and clipped `<foreignObject>` content. The checks are heuristic, so an empty list does not replace visual inspection, and a reported issue may occasionally be intentional.
+
+## Workflow
+
+### 1. Plan
+
+Before writing SVG, state in a few lines:
+
+- The single message the figure must convey and the paper section it supports.
+- Components, their grouping, and the flow direction.
+- Exact labels, taken verbatim from the paper's terminology.
+- Target width: single column (`240pt`) or full width (`504pt`), unless the template differs.
+
+### 2. Write the SVG
+
+Write `figures/<name>.svg` directly with the Write tool. Any SVG or embedded HTML/CSS feature that Chromium renders is allowed. These conventions keep the output predictable:
+
+- Size the canvas at final print size: `width="504pt" height="220pt" viewBox="0 0 504 220"`. Then `font-size` values equal printed point sizes. Use at least 7 for any text and 8–10 for main labels.
+- Match the paper's font when it is available (e.g., Times/Libertine for body-matched labels), otherwise use a clean sans-serif stack such as `Helvetica, Arial, sans-serif`. Web fonts via `@font-face` are fine; they are embedded into the PDF.
+- Draw a white background covering the full canvas.
+- For multi-line or rich labels, either break lines with `<tspan>` or use `<foreignObject>` with an HTML `<div>` for automatic wrapping, inline math-like formatting, or lists. A figure that uses `<foreignObject>` must be rendered with Chromium.
+- Give important elements an `id` so the issue report points to them.
+- Define arrowheads once in `<defs>` with `<marker>` and make arrows end on box edges.
+- Use a small, colorblind-safe palette. Elements must stay distinguishable in grayscale; add stroke style, patterns, or labels in addition to color.
+- Keep coordinates on a regular grid (multiples of 4) so alignment edits stay easy.
+- Embedded raster images (icons, screenshots) are allowed; reference them by a path relative to the SVG or as data URIs, and keep their resolution high enough for print.
+- Do not draw numbers that look like experimental results unless they come from actual experiment outputs.
+
+### 3. Render and Inspect
+
+Render a 3× PNG preview from the repository root:
 
 ```bash
-python -m pip install img2pdf
+conda run -n <PYTHON_ENV> python .claude/skills/image-gen/scripts/render_svg.py \
+  figures/<name>.svg --png figures/.preview/<name>.png
 ```
+
+With `rsvg-convert` (no layout report; `-z 3` gives the same 3× scale):
+
+```bash
+mkdir -p figures/.preview
+rsvg-convert -z 3 -b white -o figures/.preview/<name>.png figures/<name>.svg
+```
+
+Read the JSON report (Chromium only), then open `figures/.preview/<name>.png` with the Read tool and check every item below. Write down each failing item with the element it concerns.
+
+- [ ] Every reported `issues` entry is fixed or confirmed intentional.
+- [ ] No text is clipped, overflows its box, or runs off the canvas.
+- [ ] No unintended overlap between text, boxes, and arrows.
+- [ ] Every arrow starts and ends at the intended element, and the direction matches the described flow.
+- [ ] Boxes at the same level are aligned and evenly spaced. Margins are balanced with no large empty regions.
+- [ ] Text is readable at print size (the preview is 3× scale, so text should look large and clear).
+- [ ] Visual hierarchy is clear: the main path or component stands out from auxiliary elements.
+- [ ] Labels and component names match the paper text exactly.
+- [ ] Colors remain distinguishable in grayscale.
+- [ ] The figure contains no fabricated data.
+
+### 4. Revise
+
+Fix every failing item by editing the SVG (prefer targeted Edit calls on coordinates, sizes, and labels), re-render, and re-inspect. Repeat steps 3–4 until all items pass, up to 5 rounds. If items still fail after 5 rounds, record them in the stage report and continue.
+
+For key figures such as the system overview, after the checklist passes, spawn one independent sub-agent that reads only the PNG and the figure's caption and paragraph, and reports blocking issues against the same checklist. Fix blocking issues, then re-render once more.
+
+### 5. Export and Insert
+
+Export the final vector PDF and remove the preview:
+
+```bash
+conda run -n <PYTHON_ENV> python .claude/skills/image-gen/scripts/render_svg.py \
+  figures/<name>.svg --pdf figures/<name>.pdf
+rm figures/.preview/<name>.png
+```
+
+With `rsvg-convert`:
+
+```bash
+rsvg-convert -f pdf -o figures/<name>.pdf figures/<name>.svg
+rm figures/.preview/<name>.png
+```
+
+The PDF page equals the SVG canvas, so insert it with `\includegraphics[width=\linewidth]{figures/<name>.pdf}` (or `\textwidth` for full-width figures), and write a caption that explains what the figure shows.
 
 ## Quality Checks
 
 Before considering the figure complete:
 
-1. The image matches the surrounding paper text and all labels are readable.
-2. The generated PDF opens correctly.
-3. The LaTeX source references the figure and its caption accurately describes the content.
-4. No experimental result is fabricated in the image.
+1. All checklist items in step 3 pass, or remaining failures are recorded.
+2. `figures/<name>.pdf` exists and the compiled paper shows it correctly, with text selectable (vector, not rasterized).
+3. The caption and surrounding text describe the figure accurately.
+4. The SVG source is kept next to the PDF so later revisions edit the source, not the PDF.
