@@ -60,6 +60,14 @@ Both renderers resolve font families through fontconfig, so a font that is not i
 
 `issues` lists layout problems detected from rendered geometry: text off the canvas, text overflowing its enclosing `<rect>`, overlapping text, and clipped `<foreignObject>` content. The checks are heuristic, so an empty list does not replace visual inspection, and a reported issue may occasionally be intentional.
 
+## Figure Requirements
+
+Every figure must meet these three requirements. They take priority over layout convenience.
+
+1. **Minimal text.** Do not put paragraphs or full sentences inside the figure. Use short labels (names or short noun phrases). When an element needs explanation, add at most one brief phrase. Longer explanations belong in the caption and body text.
+2. **Clear and unambiguous.** A reader must interpret the figure in exactly one way. Each color, shape, line style, and arrow type carries one meaning throughout the figure, with a legend when several encodings are used. Every arrow has an obvious source, target, and direction. Avoid tangled crossings and icons or symbols open to multiple readings.
+3. **Information-rich.** The figure must express the actual content precisely. A figure made of a few labeled boxes joined by arrows is not acceptable. Show the concrete structure instead: internal sub-components, what flows along each arrow (data, messages, key variables, or shapes), inputs and outputs, step order, and the key mechanism that distinguishes the method. A small concrete example instance often helps. Convey this information through layout, grouping, visual encoding, and compact symbols, not through added text.
+
 ## Workflow
 
 ### 1. Plan
@@ -68,7 +76,9 @@ Before writing SVG, state in a few lines:
 
 - The single message the figure must convey and the paper section it supports.
 - Components, their grouping, and the flow direction.
-- Exact labels, taken verbatim from the paper's terminology.
+- The concrete details beyond component names that make the figure information-rich: sub-components, what each arrow carries, the key mechanism, and any example instance.
+- The visual encoding: what each color, shape, and line style means.
+- Exact labels, taken verbatim from the paper's terminology and kept short.
 - Target width: single column (`240pt`) or full width (`504pt`), unless the template differs.
 
 ### 2. Write the SVG
@@ -78,7 +88,7 @@ Write `figures/<name>.svg` directly with the Write tool. Any SVG or embedded HTM
 - Size the canvas at final print size: `width="504pt" height="220pt" viewBox="0 0 504 220"`. Then `font-size` values equal printed point sizes. Use at least 7 for any text and 8–10 for main labels.
 - Match the paper's font when it is available (e.g., Times/Libertine for body-matched labels), otherwise use a clean sans-serif stack such as `Helvetica, Arial, sans-serif`. Web fonts via `@font-face` are fine; they are embedded into the PDF.
 - Draw a white background covering the full canvas.
-- For multi-line or rich labels, either break lines with `<tspan>` or use `<foreignObject>` with an HTML `<div>` for automatic wrapping, inline math-like formatting, or lists. A figure that uses `<foreignObject>` must be rendered with Chromium.
+- For two-line or rich labels, either break lines with `<tspan>` or use `<foreignObject>` with an HTML `<div>` for automatic wrapping or inline math-like formatting. Labels stay short either way; never use `<foreignObject>` to place paragraphs. A figure that uses `<foreignObject>` must be rendered with Chromium.
 - Give important elements an `id` so the issue report points to them.
 - Define arrowheads once in `<defs>` with `<marker>` and make arrows end on box edges.
 - Use a small, colorblind-safe palette. Elements must stay distinguishable in grayscale; add stroke style, patterns, or labels in addition to color.
@@ -112,6 +122,9 @@ Read the JSON report (Chromium only), then open `figures/.preview/<name>.png` wi
 - [ ] Text is readable at print size (the preview is 3× scale, so text should look large and clear).
 - [ ] Visual hierarchy is clear: the main path or component stands out from auxiliary elements.
 - [ ] Labels and component names match the paper text exactly.
+- [ ] No paragraphs or full sentences appear in the figure. Labels are short, and annotations are brief phrases.
+- [ ] The figure reads in only one way. Each color, shape, line style, and arrow type has one consistent meaning, and a legend explains them when needed.
+- [ ] The figure is information-rich. It shows internal structure, what flows between components, and the key mechanism, not just a few labeled boxes.
 - [ ] Colors remain distinguishable in grayscale.
 - [ ] The figure contains no fabricated data.
 
@@ -119,7 +132,7 @@ Read the JSON report (Chromium only), then open `figures/.preview/<name>.png` wi
 
 Fix every failing item by editing the SVG (prefer targeted Edit calls on coordinates, sizes, and labels), re-render, and re-inspect. Repeat steps 3–4 until all items pass, up to 5 rounds. If items still fail after 5 rounds, record them in the stage report and continue.
 
-For key figures such as the system overview, after the checklist passes, spawn one independent sub-agent that reads only the PNG and the figure's caption and paragraph, and reports blocking issues against the same checklist. Fix blocking issues, then re-render once more.
+For key figures such as the system overview, after the checklist passes, spawn one independent sub-agent that reads only the PNG and the figure's caption and paragraph, describes what it understands the figure to show, and reports blocking issues against the same checklist. Any mismatch between that description and the intended message counts as a blocking ambiguity. Fix blocking issues, then re-render once more.
 
 ### 5. Export and Insert
 
