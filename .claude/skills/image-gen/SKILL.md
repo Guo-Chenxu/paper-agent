@@ -62,9 +62,10 @@ Both renderers resolve font families through fontconfig, so a font that is not i
 
 ## Figure Requirements
 
-Every figure must meet these three requirements. They take priority over layout convenience.
+Every figure must meet these four requirements. They take priority over layout convenience.
 
-1. **Minimal text.** Do not put paragraphs or full sentences inside the figure. Use short labels (names or short noun phrases). When an element needs explanation, add at most one brief phrase. Longer explanations belong in the caption and body text.
+1. **One panel per figure.** Each generated image contains exactly one figure. When the paper needs several subfigures, generate one SVG and one PDF per subfigure, then arrange them in LaTeX (for example with `subfigure`/`subcaption`). Drawing several subfigures as panels inside a single image is forbidden.
+2. **Minimal text.** Do not put paragraphs or full sentences inside the figure. Use short labels (names or short noun phrases). When an element needs explanation, add at most one brief phrase. Longer explanations belong in the caption and body text.
 2. **Clear and unambiguous.** A reader must interpret the figure in exactly one way. Each color, shape, line style, and arrow type carries one meaning throughout the figure, with a legend when several encodings are used. Every arrow has an obvious source, target, and direction. Avoid tangled crossings and icons or symbols open to multiple readings.
 3. **Information-rich.** The figure must express the actual content precisely. A figure made of a few labeled boxes joined by arrows is not acceptable. Show the concrete structure instead: internal sub-components, what flows along each arrow (data, messages, key variables, or shapes), inputs and outputs, step order, and the key mechanism that distinguishes the method. A small concrete example instance often helps. Convey this information through layout, grouping, visual encoding, and compact symbols, not through added text.
 
@@ -125,6 +126,7 @@ Read the JSON report (Chromium only), then open `figures/.preview/<name>.png` wi
 - [ ] No paragraphs or full sentences appear in the figure. Labels are short, and annotations are brief phrases.
 - [ ] The figure reads in only one way. Each color, shape, line style, and arrow type has one consistent meaning, and a legend explains them when needed.
 - [ ] The figure is information-rich. It shows internal structure, what flows between components, and the key mechanism, not just a few labeled boxes.
+- [ ] The image contains exactly one figure. No multi-panel or subfigure layout is drawn inside a single canvas.
 - [ ] Colors remain distinguishable in grayscale.
 - [ ] The figure contains no fabricated data.
 
