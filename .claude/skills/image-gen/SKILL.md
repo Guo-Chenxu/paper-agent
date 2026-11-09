@@ -62,12 +62,14 @@ Both renderers resolve font families through fontconfig, so a font that is not i
 
 ## Figure Requirements
 
-Every figure must meet these four requirements. They take priority over layout convenience.
+Every figure must meet these six requirements. They take priority over layout convenience.
 
 1. **One panel per figure.** Each generated image contains exactly one figure. When the paper needs several subfigures, generate one SVG and one PDF per subfigure, then arrange them in LaTeX (for example with `subfigure`/`subcaption`). Drawing several subfigures as panels inside a single image is forbidden.
 2. **Minimal text.** Do not put paragraphs or full sentences inside the figure. Use short labels (names or short noun phrases). When an element needs explanation, add at most one brief phrase. Longer explanations belong in the caption and body text.
-2. **Clear and unambiguous.** A reader must interpret the figure in exactly one way. Each color, shape, line style, and arrow type carries one meaning throughout the figure, with a legend when several encodings are used. Every arrow has an obvious source, target, and direction. Avoid tangled crossings and icons or symbols open to multiple readings.
-3. **Information-rich.** The figure must express the actual content precisely. A figure made of a few labeled boxes joined by arrows is not acceptable. Show the concrete structure instead: internal sub-components, what flows along each arrow (data, messages, key variables, or shapes), inputs and outputs, step order, and the key mechanism that distinguishes the method. A small concrete example instance often helps. Convey this information through layout, grouping, visual encoding, and compact symbols, not through added text.
+3. **Every connector lands on its target.** Each line, arrow, and polyline terminates at a defined anchor: the border of the source shape and the border of the target shape, or a labeled node, bracket, or tick. No segment ends in empty space, and no segment stops short of or passes through the shape it connects. Elbow connectors stay orthogonal and turn at coordinates computed from box geometry, so that moving a box keeps the connector attached to it.
+4. **Lines never touch text.** No connector, border, or guide line runs through, over, or under a label. Keep clear of the label's bounding box on all four sides, and route the line around the text or move the text off the lane. When a label must sit near a line, leave visible clearance and, if needed, break the line into two segments with a gap for the label.
+5. **Clear and unambiguous.** A reader must interpret the figure in exactly one way. Each color, shape, line style, and arrow type carries one meaning throughout the figure, with a legend when several encodings are used. Every arrow has an obvious source, target, and direction. Avoid tangled crossings and icons or symbols open to multiple readings.
+6. **Information-rich.** The figure must express the actual content precisely. A figure made of a few labeled boxes joined by arrows is not acceptable. Show the concrete structure instead: internal sub-components, what flows along each arrow (data, messages, key variables, or shapes), inputs and outputs, step order, and the key mechanism that distinguishes the method. A small concrete example instance often helps. Convey this information through layout, grouping, visual encoding, and compact symbols, not through added text.
 
 ## Workflow
 
@@ -79,6 +81,7 @@ Before writing SVG, state in a few lines:
 - Components, their grouping, and the flow direction.
 - The concrete details beyond component names that make the figure information-rich: sub-components, what each arrow carries, the key mechanism, and any example instance.
 - The visual encoding: what each color, shape, and line style means.
+- Connector routing: which shape borders each line attaches to, and where the text lanes sit so that no line crosses a label.
 - Exact labels, taken verbatim from the paper's terminology and kept short.
 - Target width: single column (`240pt`) or full width (`504pt`), unless the template differs.
 
@@ -92,6 +95,8 @@ Write `figures/<name>.svg` directly with the Write tool. Any SVG or embedded HTM
 - For two-line or rich labels, either break lines with `<tspan>` or use `<foreignObject>` with an HTML `<div>` for automatic wrapping or inline math-like formatting. Labels stay short either way; never use `<foreignObject>` to place paragraphs. A figure that uses `<foreignObject>` must be rendered with Chromium.
 - Give important elements an `id` so the issue report points to them.
 - Define arrowheads once in `<defs>` with `<marker>` and make arrows end on box edges.
+- Anchor every connector to explicit geometry. Compute the start and end points from the source and target box coordinates, so that each endpoint sits on a box border or on a labeled node. Pull the arrowhead back by a few points so the marker tip touches the border instead of crossing it. No connector may end in open space or stop short of the shape it points to.
+- Route lines clear of text. Reserve a lane for each connector and keep label bounding boxes outside it. When a label must sit on an edge, place it in a gap between two segments or offset it perpendicular to the line, and keep at least 3 pt of clearance from the stroke. Adjust label lengths and box sizes early, because a longer label can push a line into neighboring text.
 - Use a small, colorblind-safe palette. Elements must stay distinguishable in grayscale; add stroke style, patterns, or labels in addition to color.
 - Keep coordinates on a regular grid (multiples of 4) so alignment edits stay easy.
 - Embedded raster images (icons, screenshots) are allowed; reference them by a path relative to the SVG or as data URIs, and keep their resolution high enough for print.
@@ -118,6 +123,8 @@ Read the JSON report (Chromium only), then open `figures/.preview/<name>.png` wi
 - [ ] Every reported `issues` entry is fixed or confirmed intentional.
 - [ ] No text is clipped, overflows its box, or runs off the canvas.
 - [ ] No unintended overlap between text, boxes, and arrows.
+- [ ] Every connector has an anchor at both ends: it starts on the source shape or node and ends on the target border, with no endpoint floating in empty space.
+- [ ] No connector crosses, touches, or passes under any text. Labels on edges sit in a gap or in clear offset space, and every label keeps visible clearance from all strokes.
 - [ ] Every arrow starts and ends at the intended element, and the direction matches the described flow.
 - [ ] Boxes at the same level are aligned and evenly spaced. Margins are balanced with no large empty regions.
 - [ ] Text is readable at print size (the preview is 3× scale, so text should look large and clear).
