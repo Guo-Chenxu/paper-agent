@@ -71,16 +71,18 @@ sed 's|<PYTHON_ENV>|paper-agent|g; s|<PDFLATEX_CMD>|pdflatex|g' CLAUDE.md > CLAU
 /paper-annotation-reviser 根据批注文件 @paper-pizhu.pdf 修改原论文 @paper/paper.tex
 ```
 
+7. 生成修改高亮版（可选）
+
+```txt
+/paper-diff-highlight 对比上一次提交，生成 @paper/paper.tex 的修改高亮版 PDF
+```
+
 ## 输出位置
 
 - `./papers/`：爬取的论文与摘要、元数据
 - `./paper/`：LaTeX 源、生成的 PDF、`figures/` 存放图片 PDF
 - `./reports/`：各阶段生成的报告（筛选报告、实验报告、模拟审稿等）
 - ...
-
-## 一些经验
-
-1. 截止至2026年4月12日，实测推荐使用 claude code + claude opus 4.6效果最佳，可以使用国内中转站 [bytecatcode](https://www.bytecatcode.org/register?aff=cXYn)。
 
 ## 开发与贡献
 
