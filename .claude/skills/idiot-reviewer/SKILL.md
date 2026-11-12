@@ -38,7 +38,11 @@ Read the paper one paragraph at a time. After each paragraph, ask yourself:
 - Are there any words, terms, or concepts I don't understand?
 - Is the logical connection to the previous paragraph clear?
 - Do I understand WHY this paragraph exists in the paper?
-- Is there any sentence that seems unnecessarily complex or confusing?
+- Is any reasoning step missing? If the text moves from A to C, can I see how B follows?
+- Does anything here repeat what an earlier paragraph already said?
+- Is there any sentence that is wordy, roundabout, or unnecessarily complex?
+- Does every sentence read correctly and mean the obvious thing on the first pass?
+- Do the numbers, names, symbols, units, and trends here match the figures and tables they refer to?
 
 ### Step 3: Flag Everything
 
@@ -55,6 +59,12 @@ For every single issue, record:
 - If the motivation is not immediately clear, flag it
 - If something is stated as obvious but you don't see why, flag it
 - If a transition between ideas feels abrupt, flag it
+- If a reasoning step is missing and you have to guess how the text got from one claim to the next, flag it
+- If a sentence is grammatically wrong, ambiguous, or uses a word in a way that could be read two ways, flag it
+- If a sentence is wordy or roundabout and a shorter direct version says the same thing, flag it and write the shorter version
+- If a number, name, symbol, unit, or trend in the text does not match the figure or table it refers to, flag it — this is always blocking
+- If a paragraph repeats something already stated, flag it
+- If the Abstract contains technical details that a reader outside the field cannot follow, flag them
 
 ## Question Categories to Cover
 
@@ -73,11 +83,24 @@ For every single issue, record:
 - Claims made without explanation or support
 - Assumptions stated as facts
 - Abrupt topic shifts
+- Every step in the reasoning chain present on the page, so no reader has to supply a missing step
 
 ### Clarity & Readability
 - Sentences that are too long or complex to parse on first read
+- Sentences that are grammatically wrong or that allow more than one reading
+- Wordy or roundabout passages with a shorter direct replacement
+- Repeated information that adds nothing new
 - Abstract concepts described without concrete examples
 - Quantitative claims without intuitive interpretation (e.g., "accuracy improved by 3.2%" — is that a lot? why?)
+
+### Text, Figure, and Table Consistency
+- Numbers in the text that differ from the matching figure or table
+- Labels, legends, symbols, units, or names that differ between the text and the visuals
+- Trends the text claims that the figure does not show
+
+### Abstract Level
+- Technical details in the Abstract (algorithm steps, component names, parameter settings, implementation choices, dataset specifics)
+- Whether the Abstract alone conveys the problem, the core idea, and the main result in plain language
 
 ### Big Picture
 - After reading the whole paper: what is the ONE thing the authors want readers to remember?

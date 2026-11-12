@@ -89,11 +89,12 @@ Answer these before drafting:
 ## Writing Rules
 
 1. Keep the abstract self-contained; avoid undefined acronyms and paper-internal terms.
-2. Use one sentence for one message; do not compress context, gap, and contribution into a single overloaded sentence.
-3. State evidence in the same strength as the actual support. A proof supports correctness; a user study supports observed human behavior; measurements support the observed population and period.
-4. Avoid default claims about being state-of-the-art, broadly general, or universally applicable unless the paper directly supports them.
-5. Mention benchmarks, datasets, ablations, or leaderboards only when they are central and applicable.
-6. End with scope or implication rather than hype.
+2. Keep the abstract at a high level. Do not include algorithm steps, component names, parameter settings, implementation choices, or dataset-level specifics. Name the problem, the core idea, the evidence type, and the outcome in general terms, and leave the details to the body.
+3. Use one sentence for one message; do not compress context, gap, and contribution into a single overloaded sentence.
+4. State evidence in the same strength as the actual support. A proof supports correctness; a user study supports observed human behavior; measurements support the observed population and period.
+5. Avoid default claims about being state-of-the-art, broadly general, or universally applicable unless the paper directly supports them.
+6. Mention benchmarks, datasets, ablations, or leaderboards only when they are central and applicable.
+7. End with scope or implication rather than hype.
 
 ## Abstract Quality Checklist
 
@@ -102,3 +103,4 @@ Answer these before drafting:
 3. Are terms self-contained and readable outside the paper?
 4. Does the abstract avoid overclaiming beyond the studied setting or proof assumptions?
 5. Does each sentence carry one message only?
+6. Does the abstract stay at a high level, with no algorithm steps, component names, parameter settings, implementation choices, or dataset-level specifics?

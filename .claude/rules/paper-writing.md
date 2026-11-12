@@ -12,6 +12,8 @@
 - The abstract should be a highly condensed version of the entire paper.
 - It should still cover the background, problem, and solution.
 - Emphasize the main contributions. A clear structure can be: "First, ... Second, ... Third, ..."
+- Keep the abstract at a high level. Do not include technical details such as algorithm steps, component names, parameter settings, implementation choices, or dataset-level specifics. State the problem, the core idea, and the outcome in general terms.
+- A reader outside the subfield should follow every sentence of the abstract without reading the rest of the paper.
 
 ## Introduction
 
@@ -26,6 +28,16 @@
 - Keep the related work section concise.
 - Organize and present related work according to the paper's contributions.
 - Keep the indexing structure and paragraph structure consistent.
+
+## Coherence and Readability
+
+- Reading the paper must not require jumps. Each sentence should follow from the one before, and each paragraph from the one before. When two ideas are connected in the author's mind, the paper has to state the connection on the page.
+- Keep the reasoning chain complete. If the text moves from A to C, either state the intermediate step B or remove the jump. Never let a reader fill in a missing step alone.
+- Introduce a concept before using it, and present a problem before the solution that addresses it. A term, symbol, or claim that appears before its definition breaks the chain.
+- State the point first, then explain it. Plain, direct statements beat indirect constructions. Cut any clause that repeats an earlier point or adds nothing to the argument.
+- A reader should understand each sentence on the first pass. Fix grammar errors and wrong word choices, and replace any wording whose intended meaning is not the obvious reading.
+- Any reader with no background in the topic should follow the whole argument from the text alone. When a competent outsider cannot follow a passage, the passage is unclear, and its length or sophistication does not excuse it.
+- Keep the text, figures, and tables consistent. Numbers, names, symbols, units, and trends reported in the prose must match what the figures and tables show.
 
 ## Writing and Wording
 
