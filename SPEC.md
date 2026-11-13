@@ -95,7 +95,7 @@
 1. 生成实验设计方案（目的、数据集、基线、方法实现、评价指标）
 2. 配置环境，实现所有基线和提出的方法
 3. 运行实验并记录完整数据（长时间任务后台运行，monitor监控回调）
-4. 统计分析、可视化、性能对比、消融实验
+4. 统计分析、可视化、性能对比、消融实验；实验结果图用Python从实验数据绘制，并遵守 `.claude/skills/image-gen` 的图片规范
 5. 反思实验结果是否足以支撑论文撰写，不足则补全并重新运行
 
 **输出**：`./experiments/`、`./experiment_data/`、`./figures/`、`./reports/experiment_results_report.md`
@@ -114,7 +114,7 @@
 
 1. 读取阶段0页数规划，参考 `./templates/` 格式
 2. 分模块撰写（Abstract → Introduction → Related Work → Methodology → Experiments → Conclusion → References）
-3. 插入实验图表，调用 `.claude/skills/image-gen` 生成架构图等
+3. 插入图表，所有图片均遵守 `.claude/skills/image-gen`：实验结果图用Python从实验数据绘制，架构图、流程图等其他图片用SVG绘制
 4. 参考文献以近几年为主，必须真实可访问
 5. 使用 `.claude/skills/ai-detector` 检测并修改AI痕迹
 6. 生成完整LaTeX源码，编译为PDF并检查编译日志
@@ -187,5 +187,5 @@
 
 - 所有Python代码在用户指定的环境中执行
 - 可复用工具和prompt保存到 `.claude/skills/`，阶段性产物保存到对应工作目录
-- 图片放置在 `./figures/` 目录，架构图等使用 `.claude/skills/image-gen` 生成
+- 图片放置在 `./figures/` 目录，所有图片均遵守 `.claude/skills/image-gen`：实验结果图用Python绘制，其余图片（架构图、流程图等）用SVG绘制
 - 论文写作和润色可使用 `.claude/skills/research-paper-writing` skill

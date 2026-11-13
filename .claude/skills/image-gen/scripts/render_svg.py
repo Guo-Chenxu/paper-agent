@@ -31,28 +31,103 @@ CHECK_JS = """() => {
     a.right <= b.right + tol && a.bottom <= b.bottom + tol;
   const overlap = (a, b) => Math.min(a.right, b.right) - Math.max(a.left, b.left) > tol &&
     Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > tol;
+  const partial = (a, b) => overlap(a, b) && !inside(a, b) && !inside(b, a);
+  const name = el => el.id ? "#" + el.id : "<" + el.tagName + ">";
+  // Elements inside these containers are templates, not drawn in place.
+  const drawn = el => !el.closest("defs, marker, symbol, clipPath, mask, pattern");
+  const fullCanvas = r => r.width >= root.width - tol && r.height >= root.height - tol;
+  const painted = (paint, opacity) => paint !== "none" && !/rgba\\(.*,\\s*0\\)$/.test(paint) && parseFloat(opacity) > 0;
   const issues = [];
+  const report = msg => { if (!issues.includes(msg)) issues.push(msg); };
 
   const texts = [...document.querySelectorAll("text")]
-    .filter(el => el.textContent.trim())
+    .filter(el => drawn(el) && el.textContent.trim())
     .map(el => ({ el, r: el.getBoundingClientRect() }));
   // Full-canvas rects are backgrounds, not containers.
   const boxes = [...document.querySelectorAll("rect")]
-    .map(el => el.getBoundingClientRect())
-    .filter(r => r.width < root.width - tol || r.height < root.height - tol);
+    .filter(drawn)
+    .map(el => ({ el, r: el.getBoundingClientRect() }))
+    .filter(b => !fullCanvas(b.r));
+  const holderOf = r => {
+    const cx = (r.left + r.right) / 2, cy = (r.top + r.bottom) / 2;
+    return boxes
+      .filter(b => cx >= b.r.left && cx <= b.r.right && cy >= b.r.top && cy <= b.r.bottom)
+      .sort((a, b) => a.r.width * a.r.height - b.r.width * b.r.height)[0];
+  };
 
   for (const t of texts) {
     if (!inside(t.r, root)) issues.push("off-canvas: text " + label(t.el));
-    const cx = (t.r.left + t.r.right) / 2, cy = (t.r.top + t.r.bottom) / 2;
-    const holder = boxes
-      .filter(b => cx >= b.left && cx <= b.right && cy >= b.top && cy <= b.bottom)
-      .sort((a, b) => a.width * a.height - b.width * b.height)[0];
-    if (holder && !inside(t.r, holder)) issues.push("overflows box: text " + label(t.el));
+    const holder = holderOf(t.r);
+    if (holder && !inside(t.r, holder.r)) issues.push("overflows box: text " + label(t.el));
   }
-  for (let i = 0; i < texts.length; i++)
-    for (let j = i + 1; j < texts.length; j++)
-      if (overlap(texts[i].r, texts[j].r))
-        issues.push("text overlap: " + label(texts[i].el) + " and " + label(texts[j].el));
+
+  // Labels for the overlap checks: <text> plus the tight text box of each <foreignObject>.
+  const labels = [...texts];
+  for (const fo of document.querySelectorAll("foreignObject")) {
+    if (!drawn(fo) || !fo.textContent.trim()) continue;
+    const walker = document.createTreeWalker(fo, NodeFilter.SHOW_TEXT);
+    let l = Infinity, t = Infinity, r = -Infinity, b = -Infinity;
+    for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+      if (!n.textContent.trim()) continue;
+      const range = document.createRange();
+      range.selectNodeContents(n);
+      const box = range.getBoundingClientRect();
+      l = Math.min(l, box.left); t = Math.min(t, box.top); r = Math.max(r, box.right); b = Math.max(b, box.bottom);
+    }
+    if (r > l) labels.push({ el: fo, r: { left: l, top: t, right: r, bottom: b, width: r - l, height: b - t } });
+  }
+  for (let i = 0; i < labels.length; i++)
+    for (let j = i + 1; j < labels.length; j++)
+      if (overlap(labels[i].r, labels[j].r))
+        issues.push("text overlap: " + label(labels[i].el) + " and " + label(labels[j].el));
+
+  // Strokes (connectors, borders, guides) that touch a label, sampled about every 1 px along the outline.
+  const geoms = [...document.querySelectorAll("line, polyline, polygon, path, rect, circle, ellipse")]
+    .filter(el => drawn(el) && !fullCanvas(el.getBoundingClientRect()));
+  for (const el of geoms) {
+    const s = getComputedStyle(el);
+    if (!painted(s.stroke, s.strokeOpacity) || !(parseFloat(s.strokeWidth) > 0)) continue;
+    const m = el.getScreenCTM();
+    if (!m) continue;
+    const scale = Math.hypot(m.a, m.b) || 1;
+    const half = parseFloat(s.strokeWidth) * scale / 2;
+    let len = 0;
+    try { len = el.getTotalLength(); } catch (e) { continue; }
+    const step = 1 / scale, n = Math.min(Math.ceil(len / step), 20000);
+    for (let k = 0; k <= n; k++) {
+      const p = el.getPointAtLength(Math.min(k * step, len)), q = new DOMPoint(p.x, p.y).matrixTransform(m);
+      for (const lb of labels)
+        if (q.x > lb.r.left - half + tol && q.x < lb.r.right + half - tol &&
+            q.y > lb.r.top - half + tol && q.y < lb.r.bottom + half - tol)
+          report("stroke touches text: " + name(el) + " and " + label(lb.el));
+    }
+  }
+
+  // Images and compact shapes: nesting is fine, partial overlap is not.
+  const images = [...document.querySelectorAll("image")].filter(drawn)
+    .map(el => ({ el, r: el.getBoundingClientRect() }));
+  for (const im of images)
+    for (const lb of labels)
+      if (overlap(im.r, lb.r)) report("text over image: " + label(lb.el) + " and " + name(im.el));
+  const shapes = [...document.querySelectorAll("rect, circle, ellipse")]
+    .filter(el => {
+      const s = getComputedStyle(el);
+      return drawn(el) && (painted(s.fill, s.fillOpacity) || painted(s.stroke, s.strokeOpacity));
+    })
+    .map(el => ({ el, r: el.getBoundingClientRect() }))
+    .filter(sh => !fullCanvas(sh.r))
+    .concat(images);
+  for (const lb of labels) {
+    const holder = holderOf(lb.r);
+    for (const sh of shapes)
+      if (sh.el !== (holder && holder.el) && sh.el.tagName !== "image" && partial(lb.r, sh.r))
+        report("text partially covers shape: " + label(lb.el) + " and " + name(sh.el));
+  }
+  // Dots and markers below 8 px are skipped: they often sit on borders on purpose.
+  const big = shapes.filter(sh => sh.r.width >= 8 && sh.r.height >= 8);
+  for (let i = 0; i < big.length; i++)
+    for (let j = i + 1; j < big.length; j++)
+      if (partial(big[i].r, big[j].r)) report("shapes overlap: " + name(big[i].el) + " and " + name(big[j].el));
 
   for (const fo of document.querySelectorAll("foreignObject")) {
     const c = fo.firstElementChild;
